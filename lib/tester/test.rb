@@ -1,7 +1,7 @@
 module Tester
   class Test
     # Sentinel Object for tests that cannot be executed
-    class NotExecutable < Exception; end
+    class NotExecutable; end
     # Test Results
     class NoResult; end
     class Pass; end
@@ -12,9 +12,6 @@ module Tester
     def initialize(file)
       @file = file
       @result = NoResult
-      unless File.executable? @file
-        raise NotExecutable
-      end
     end
     
     def name
@@ -26,21 +23,27 @@ module Tester
     end
 
     def run!
-      @reason = %x[#{file}] # Run the test file
-      # Capture the exit status, and map to a result object
-      @result = case $?.exitstatus
-      when 0; Pass
-      when 1; Fail
-      when 2; Skip
+      if File.executable? file
+        @reason = %x[#{file}] # Run the test file
+        # Capture the exit status, and map to a result object
+        @result = case $?.exitstatus
+        when 0; Pass
+        when 1; Fail
+        when 2; Skip
+        end
+      else
+        @reason = NotExecutable
       end
     end
 
     def passed?
       @result == Pass
     end
+    
     def failed?
       @result == Fail
     end
+    
     def skipped?
       @result == Skip
     end
