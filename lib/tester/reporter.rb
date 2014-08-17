@@ -14,11 +14,16 @@ module Tester
         print result.icon
       end
     end
-    def display(result)
+    def display(index, result)
       if colored?
-        print result.colored_epilogue
+        to_display = result.colored_epilogue
       else
-        print result.epilogue
+        to_display = result.epilogue
+      end
+      lines = to_display.split("\n")
+      puts "  #{index}) #{lines.shift}"
+      lines.each do |line|
+        puts "    " + line
       end
     end
   end

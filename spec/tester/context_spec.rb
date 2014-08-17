@@ -123,8 +123,8 @@ describe Tester::Context do
   end
   describe "listing tests" do
     let(:context) { Tester::Context.new("some_directory") }
-    let(:test) { double(Tester::Test) }
-    let(:another_test) { double(Tester::Test) }
+    let(:test) { double(Tester::Test, skipped?: true, failed?:false) }
+    let(:another_test) { double(Tester::Test, failed?: true, skipped?: false) }
     let(:inner_context) { double(Tester::Context, tests: [another_test]) }
     before do
       allow(context).to receive(:tests).and_return([test])
@@ -132,6 +132,12 @@ describe Tester::Context do
     end
     it "should list the tests of the context and its context" do
       expect(context.all_tests).to eq([test, another_test])
+    end
+    it "should list the failed tests" do
+      expect(context.failures).to eq([another_test])
+    end
+    it "should list the skipped tests" do
+      expect(context.skipped).to eq([test])
     end
   end
 end

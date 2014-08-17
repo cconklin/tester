@@ -17,13 +17,15 @@ describe Tester::Reporter do
   it "should display epilogues" do
     result = double("result", epilogue: "plain")
     Tester::Reporter.colored = false
-    expect(Tester::Reporter).to receive(:print).with("plain")
-    Tester::Reporter.display result
+    allow(Tester::Reporter).to receive(:puts)
+    expect(result).to receive(:epilogue)
+    Tester::Reporter.display 1, result
   end
   it "should display colored epilogues" do
     result = double("result", colored_epilogue: "colorful")
     Tester::Reporter.colored = true
-    expect(Tester::Reporter).to receive(:print).with("colorful")
-    Tester::Reporter.display result
+    allow(Tester::Reporter).to receive(:puts)
+    expect(result).to receive(:colored_epilogue)
+    Tester::Reporter.display 1, result
   end
 end

@@ -51,6 +51,14 @@ module Tester
     def all_tests
       tests + contexts.map(&:tests).inject(:+)
     end
+    
+    def failures
+      all_tests.select(&:failed?)
+    end
+
+    def skipped
+      all_tests.select(&:skipped?)
+    end
 
     private
    

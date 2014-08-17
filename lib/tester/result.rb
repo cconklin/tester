@@ -103,11 +103,11 @@ module Tester
         END
       end
       def colored_epilogue
-        "#{name}:".yellow +
-        <<-END.unindent.rstrip.blue
-          #{reason.to_s.indent(1)}
-            # #{file}
+        start = "#{name}:\n".yellow +
+        <<-END.rstrip.blue
+#{reason.to_s.rstrip.indent(1)}
         END
+        start + "\n# #{file}".blue
       end
     end
   end

@@ -12,13 +12,18 @@ describe Tester::Suite do
     expect(suite.contexts).to eq([context])
   end
   it "should run its contexts" do
-    allow(suite).to receive(:all_tests).and_return([])
+    allow(suite).to receive(:report)
     expect(context).to receive(:run!)
     suite.run!
   end
-  it "should list all tests" do
+  it "should list skips" do
     test = double("test")
-    allow(context).to receive(:all_tests).and_return([test])
-    expect(suite.all_tests).to eq([test])
+    allow(context).to receive(:skipped).and_return([test])
+    expect(suite.skipped).to eq([test])
+  end
+  it "should list failures" do
+    test = double("test")
+    allow(context).to receive(:failures).and_return([test])
+    expect(suite.failures).to eq([test])
   end
 end
