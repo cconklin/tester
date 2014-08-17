@@ -24,7 +24,7 @@ describe Tester::Test do
       expect(test.ran?).to eq(false)
     end
     it "should have no result" do
-      expect(test.result).to eq(Tester::Test::NoResult)
+      expect(test.result).to eq(Tester::Result::NoResult)
     end
   end
   describe "running a test" do
@@ -39,7 +39,7 @@ describe Tester::Test do
         bad_test.run!
       end
       it "should raise an exception when the file is not executable" do
-        expect(bad_test.result).to eq(Tester::Test::NoResult)
+        expect(bad_test.result).to eq(Tester::Result::NoResult)
       end
       it "should report as not having run" do
         expect(bad_test.ran?).to eq(false)
@@ -55,7 +55,7 @@ describe Tester::Test do
         test.run!
       end
       it "should set the result to passing" do
-        expect(test.result).to eq(Tester::Test::Pass)
+        expect(test.result).to eq(Tester::Result::Pass)
       end
       it "should set the reason to the output of the test" do
         expect(test.reason).to eq("a result")
@@ -74,7 +74,7 @@ describe Tester::Test do
         test.run!
       end
       it "should set the result to failing" do
-        expect(test.result).to eq(Tester::Test::Fail)
+        expect(test.result).to eq(Tester::Result::Fail)
       end
       it "should set the reason to the output of the test" do
         expect(test.reason).to eq("a result")
@@ -93,7 +93,7 @@ describe Tester::Test do
         test.run!
       end
       it "should set the result to skipped" do
-        expect(test.result).to eq(Tester::Test::Skip)
+        expect(test.result).to eq(Tester::Result::Skip)
       end
       it "should set the reason to the output of the test" do
         expect(test.reason).to eq("a result")

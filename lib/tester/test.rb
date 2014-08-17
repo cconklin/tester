@@ -1,17 +1,13 @@
+require "tester/result"
 module Tester
   class Test
     # Sentinel Object for tests that cannot be executed
     class NotExecutable; end
-    # Test Results
-    class NoResult; end
-    class Pass; end
-    class Fail; end
-    class Skip; end
 
     attr_reader :file, :result, :reason
     def initialize(file)
       @file = file
-      @result = NoResult
+      @result = Result::NoResult
     end
     
     def name
@@ -19,7 +15,7 @@ module Tester
     end
 
     def ran?
-      @result != NoResult
+      @result != Result::NoResult
     end
 
     def run!
@@ -27,9 +23,9 @@ module Tester
         @reason = %x[#{file}] # Run the test file
         # Capture the exit status, and map to a result object
         @result = case $?.exitstatus
-        when 0; Pass
-        when 1; Fail
-        when 2; Skip
+        when 0; Result::Pass
+        when 1; Result::Fail
+        when 2; Result::Skip
         end
       else
         @reason = NotExecutable
@@ -37,15 +33,20 @@ module Tester
     end
 
     def passed?
-      @result == Pass
+      @result == Result::Pass
     end
     
     def failed?
-      @result == Fail
+      @result == Result::Fail
     end
     
     def skipped?
-      @result == Skip
+      @result == Result::Skip
     end
+
+    def epilogue
+      result.new(name, reason, file)
+    end
+
   end
 end
