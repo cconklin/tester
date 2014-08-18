@@ -21,7 +21,7 @@ module Tester
         to_display = result.epilogue
       end
       lines = to_display.split("\n")
-      puts "  #{index}) #{lines.shift}"
+      puts "%4s) #{lines.shift}" % index
       lines.each do |line|
         puts "    " + line
       end

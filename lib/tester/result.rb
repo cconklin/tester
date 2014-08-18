@@ -63,23 +63,16 @@ module Tester
     end
     class Fail < Base
       def epilogue
-        <<-END.unindent.rstrip
-          #{name}:
-            Failure Reason:
-          #{reason.to_s.indent(2)}
-            # #{file}
-        END
+        "#{name}:" << "\n" <<
+        "Failure Reason:".indent << "\n" <<
+        "#{reason}".indent(2) << "\n" <<
+        "# #{file}".indent
       end
       def colored_epilogue  
-        start = <<-END.unindent.red
-          #{name}:
-            Failure Reason:
-          #{reason.to_s.indent(2)}
-        END
-        last = <<-END.unindent.blue
-            # #{file}
-        END
-        start + last
+        "#{name}:".red << "\n" <<
+        "Failure Reason:".indent.red << "\n" <<
+        "#{reason}".indent(2).red << "\n" <<
+        "# #{file}".indent.blue
       end
       def self.icon
         "F"
@@ -96,18 +89,16 @@ module Tester
         icon.yellow
       end
       def epilogue
-        <<-END.unindent
-          #{name}:
-          #{reason.to_s.indent(1)}
-            # #{file}
-        END
+        "#{name}:" << "\n" <<
+        "Reason:".indent << "\n" <<
+        "#{reason}".indent(2) << "\n" <<
+        "# #{file}".indent
       end
       def colored_epilogue
-        start = "#{name}:\n".yellow +
-        <<-END.rstrip.blue
-#{reason.to_s.rstrip.indent(1)}
-        END
-        start + "\n# #{file}".blue
+        "#{name}:".yellow << "\n" <<
+        "Reason:".indent.yellow << "\n" <<
+        "#{reason}".indent(2).yellow << "\n" <<
+        "# #{file}".indent.blue
       end
     end
   end
