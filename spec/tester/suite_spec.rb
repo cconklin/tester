@@ -11,6 +11,10 @@ describe Tester::Suite do
   it "should have contexts" do
     expect(suite.contexts).to eq([context])
   end
+  it "should choose the right base path" do
+    expect(Tester::Context).to receive(:new).with("t/b/test/some_directory", "t/b/test")
+    Tester::Suite.new(["t/b/test/some_directory"])
+  end
   it "should run its contexts" do
     allow(suite).to receive(:report)
     expect(context).to receive(:run!)

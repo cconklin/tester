@@ -4,7 +4,14 @@ module Tester
   class Suite
     attr_reader :contexts
     def initialize(files)
-      @contexts = files.map { |root| Tester::Context.new(root, root) }
+      @contexts = files.map do |root|
+        split_root = root.split("/")
+        if split_root.include? "test"
+          Tester::Context.new(root, File.join(split_root[0..split_root.rindex("test")]))
+        else
+          Tester::Context.new(root, root)
+        end
+      end
     end
     def run!
       @contexts.each {|c| c.run! }
