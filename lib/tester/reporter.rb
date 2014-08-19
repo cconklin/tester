@@ -40,31 +40,31 @@ module Tester
       end
     end
 
-    def colored_epilogue(run, failed, skipped, ignored)
+    def colored_epilogue(examples, failed, skipped, ignored)
       if failed == 0
         if skipped == 0
           if ignored == 0
-            colorless_epilogue(run, failed, skipped, ignored).green
+            colorless_epilogue(examples, failed, skipped, ignored).green
           else
-            colorless_epilogue(run, failed, skipped, ignored)
+            colorless_epilogue(examples, failed, skipped, ignored)
           end
         else
-          colorless_epilogue(run, failed, skipped, ignored).yellow
+          colorless_epilogue(examples, failed, skipped, ignored).yellow
         end
       else
-        colorless_epilogue(run, failed, skipped, ignored).red
+        colorless_epilogue(examples, failed, skipped, ignored).red
       end
     end
 
-    def colorless_epilogue(run, failed, skipped, ignored)
+    def colorless_epilogue(examples, failed, skipped, ignored)
       if skipped == 0 and ignored == 0
-        "#{run} examples, #{failed} failure#{'s' if failed != 1}"
+        "#{examples} example#{'s' if examples != 1}, #{failed} failure#{'s' if failed != 1}"
       elsif ignored == 0
-        "#{run} examples, #{failed} failure#{'s' if failed != 1}, #{skipped} skipped"
+        "#{examples} example#{'s' if examples != 1}, #{failed} failure#{'s' if failed != 1}, #{skipped} skipped"
       elsif skipped == 0
-        "#{run} examples, #{failed} failure#{'s' if failed != 1}, #{ignored} ignored"
+        "#{examples} example#{'s' if examples != 1}, #{failed} failure#{'s' if failed != 1}, #{ignored} ignored"
       else
-        "#{run} examples, #{failed} failure#{'s' if failed != 1}, #{skipped} skipped, #{ignored} ignored"
+        "#{examples} example#{'s' if examples != 1}, #{failed} failure#{'s' if failed != 1}, #{skipped} skipped, #{ignored} ignored"
       end
     end
   end
