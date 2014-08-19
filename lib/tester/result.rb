@@ -13,13 +13,11 @@ module Tester
       end
       def epilogue
         "#{name}:" << "\n" <<
-        "Reason:".indent << "\n" <<
         "#{reason}".indent(2) << "\n" <<
         "# #{file}".indent
       end
       def colored_epilogue
         "#{name}:" << "\n" <<
-        "Reason:".indent << "\n" <<
         "#{reason}".indent(2) << "\n" <<
         "# #{file}".indent.blue
       end
@@ -43,13 +41,11 @@ module Tester
     class Fail < Base
       def epilogue
         "#{name}:" << "\n" <<
-        "Failure Reason:".indent << "\n" <<
         "#{reason}".indent(2) << "\n" <<
         "# #{file}".indent
       end
       def colored_epilogue  
         "#{name}:".red << "\n" <<
-        "Failure Reason:".indent.red << "\n" <<
         "#{reason}".indent(2).red << "\n" <<
         "# #{file}".indent.blue
       end
@@ -69,7 +65,6 @@ module Tester
       end
       def colored_epilogue
         "#{name}:".yellow << "\n" <<
-        "Reason:".indent.yellow << "\n" <<
         "#{reason}".indent(2).yellow << "\n" <<
         "# #{file}".indent.blue
       end
