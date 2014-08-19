@@ -20,6 +20,11 @@ module Tester
     end
 
     def report(time)
+      if all_tests.empty?
+        puts "[No Tests Found]"
+      else
+        puts
+      end
       puts
       puts "Failures:" unless failures.empty?
       failures.each.with_index do |test, index|
