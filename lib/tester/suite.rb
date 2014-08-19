@@ -1,4 +1,5 @@
 require "tester/test"
+require "benchmark"
 
 module Tester
   class Suite
@@ -14,11 +15,11 @@ module Tester
       end
     end
     def run!
-      @contexts.each {|c| c.run! }
-      report
+      time = Benchmark.measure { @contexts.each {|c| c.run! } }.real
+      report(time)
     end
 
-    def report
+    def report(time)
       puts
       puts "Failures:" unless failures.empty?
       failures.each.with_index do |test, index|
@@ -32,6 +33,7 @@ module Tester
       ignored.each.with_index do |test, index|
         Reporter.display index + 1, test.epilogue
       end
+      puts "Finished in #{time} seconds"
       Reporter.epilogue all_tests.count, failures.count, skipped.count, ignored.count
       puts
     end
