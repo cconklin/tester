@@ -26,4 +26,9 @@ describe Tester::Suite do
     allow(context).to receive(:failures).and_return([test])
     expect(suite.failures).to eq([test])
   end
+  it "should list the tests that were not run" do
+    test = double("test")
+    allow(context).to receive(:ignored).and_return([test])
+    expect(suite.ignored).to eq([test])
+  end
 end

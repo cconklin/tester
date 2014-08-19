@@ -49,20 +49,26 @@ describe Tester::Context do
     let(:context) { Tester::Context.new("some_directory") }
     # The UUT should not be partially mocked this much
     context "if the before fails" do
-      let(:before) { double("before", passed?: false) }
+      let(:before) { double("before", passed?: false, file: "some_directory/before") }
       let(:test) { double(Tester::Test, result: double("result")) }
-      let(:inner_context) { double(Tester::Context) }
+      let(:inner_context) { double(Tester::Context, tests: []) }
       before do
         allow(context).to receive(:before).and_return(before)
-        allow(context).to receive(:tests).and_return([test])
-        allow(context).to receive(:contexts).and_return([inner_context])
+        allow(context).to receive(:all_tests).and_return([test])
       end
       it "should not run tests" do 
         allow(context).to receive(:report)
+        allow(context).to receive(:set_no_run_reason!)
         expect(context).to_not receive(:run_tests!)
         context.run!
       end
+      it "should set its tests reason to its failure" do
+        allow(context).to receive(:report)
+        expect(test).to receive(:reason=).with("Test set-up failed.\nFile: some_directory/before")
+        context.run!
+      end
       it "should report results" do
+        allow(context).to receive(:set_no_run_reason!)
         expect(context).to receive(:report)
         context.run!
       end
@@ -123,21 +129,25 @@ describe Tester::Context do
   end
   describe "listing tests" do
     let(:context) { Tester::Context.new("some_directory") }
-    let(:test) { double(Tester::Test, skipped?: true, failed?:false) }
-    let(:another_test) { double(Tester::Test, failed?: true, skipped?: false) }
-    let(:inner_context) { double(Tester::Context, tests: [another_test]) }
+    let(:test) { double(Tester::Test, skipped?: true, failed?:false, ran?: true) }
+    let(:another_test) { double(Tester::Test, failed?: true, skipped?: false, ran?: true) }
+    let(:ignored_test) { double(Tester::Test, failed?: false, skipped?: false, ran?: false) }
+    let(:inner_context) { double(Tester::Context, all_tests: [another_test, ignored_test]) }
     before do
       allow(context).to receive(:tests).and_return([test])
       allow(context).to receive(:contexts).and_return([inner_context])
     end
     it "should list the tests of the context and its context" do
-      expect(context.all_tests).to eq([test, another_test])
+      expect(context.all_tests).to eq([test, another_test, ignored_test])
     end
     it "should list the failed tests" do
       expect(context.failures).to eq([another_test])
     end
     it "should list the skipped tests" do
       expect(context.skipped).to eq([test])
+    end
+    it "should list the tests that were not run" do
+      expect(context.ignored).to eq([ignored_test])
     end
   end
 end

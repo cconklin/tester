@@ -21,6 +21,10 @@ module Tester
       skipped.each.with_index do |test, index|
         Reporter.display index + 1, test.epilogue
       end
+      puts "Not Run:" unless ignored.empty?
+      ignored.each.with_index do |test, index|
+        Reporter.display index + 1, test.epilogue
+      end
     end
     def all_tests
       @contexts.map {|c| c.all_tests }.inject(:+)
@@ -30,6 +34,9 @@ module Tester
     end
     def failures
       @contexts.map(&:failures).inject(:+)
+    end
+    def ignored
+      @contexts.map(&:ignored).inject(:+)
     end
   end
 end

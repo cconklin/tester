@@ -2,9 +2,14 @@ require "tester/result"
 module Tester
   class Test
     # Sentinel Object for tests that cannot be executed
-    class NotExecutable; end
+    class NotExecutable
+      def self.to_s
+        "The file was not executable"
+      end
+    end
 
-    attr_reader :file, :result, :reason
+    attr_reader :file, :result
+    attr_accessor :reason
     def initialize(file)
       @file = file
       @result = Result::NoResult

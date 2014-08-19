@@ -39,10 +39,16 @@ module Tester
         @file = file
       end
       def epilogue
-        ""
+        "#{name}:" << "\n" <<
+        "Reason:".indent << "\n" <<
+        "#{reason}".indent(2) << "\n" <<
+        "# #{file}".indent
       end
       def colored_epilogue
-        epilogue
+        "#{name}:" << "\n" <<
+        "Reason:".indent << "\n" <<
+        "#{reason}".indent(2) << "\n" <<
+        "# #{file}".indent.blue
       end
     end
     class NoResult < Base
@@ -87,12 +93,6 @@ module Tester
       end
       def self.colored_icon
         icon.yellow
-      end
-      def epilogue
-        "#{name}:" << "\n" <<
-        "Reason:".indent << "\n" <<
-        "#{reason}".indent(2) << "\n" <<
-        "# #{file}".indent
       end
       def colored_epilogue
         "#{name}:".yellow << "\n" <<

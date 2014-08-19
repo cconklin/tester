@@ -35,6 +35,7 @@ module Tester
         run_tests!
         after.run!
       else
+        set_no_run_reason! "Test set-up failed.\nFile: #{before.file}"
         report
       end
     end
@@ -49,7 +50,8 @@ module Tester
     end
 
     def all_tests
-      tests + contexts.map(&:tests).inject(:+)
+      # Explicit convesion to Array since the inject call on an empty array will return nil
+      tests + Array(contexts.map(&:all_tests).inject(:+))
     end
     
     def failures
@@ -58,6 +60,10 @@ module Tester
 
     def skipped
       all_tests.select(&:skipped?)
+    end
+    
+    def ignored
+      all_tests.reject(&:ran?)
     end
 
     private
@@ -71,5 +77,12 @@ module Tester
         context.run!
       end
     end
+
+    def set_no_run_reason!(reason)
+      all_tests.each do |test|
+        test.reason = reason
+      end
+    end
+
   end
 end
