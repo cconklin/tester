@@ -8,15 +8,16 @@ module Tester
       end
     end
 
-    attr_reader :file, :result
+    attr_reader :file, :result, :base
     attr_accessor :reason
-    def initialize(file)
+    def initialize(file, base)
       @file = file
+      @base = base
       @result = Result::NoResult
     end
     
     def name
-      file.gsub /[_\/]/, " "
+      file.partition(base).last.gsub(/[_\/]/, " ").strip
     end
 
     def ran?

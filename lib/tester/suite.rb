@@ -4,7 +4,7 @@ module Tester
   class Suite
     attr_reader :contexts
     def initialize(files)
-      @contexts = files.map {|root| Tester::Context.new(root) }
+      @contexts = files.map { |root| Tester::Context.new(root, root) }
     end
     def run!
       @contexts.each {|c| c.run! }

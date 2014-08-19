@@ -6,7 +6,7 @@ describe Tester::Suite do
   let(:context) { double Tester::Context }
   let(:suite) { Tester::Suite.new(["some_directory"]) }
   before do
-    allow(Tester::Context).to receive(:new).with("some_directory").and_return(context)
+    allow(Tester::Context).to receive(:new).with("some_directory", "some_directory").and_return(context)
   end
   it "should have contexts" do
     expect(suite.contexts).to eq([context])

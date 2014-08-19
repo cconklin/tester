@@ -16,18 +16,19 @@ module Tester
       end
     end
 
-    def initialize(root)
+    def initialize(root, base)
       @root = root
+      @base = base
     end
 
     def tests
       @tests ||= Dir.entries(@root).select { |e| File.file?(File.join(@root, e)) and not Context.hook?(e) }.map do |t|
-        Tester::Test.new(File.join(@root, t))
+        Tester::Test.new(File.join(@root, t), @base)
       end
     end
     def contexts
       @contexts ||= Dir.entries(@root).reject { |e| File.file?(File.join(@root, e)) or [".", ".."].include?(e) }.map do |c|
-        Tester::Context.new(File.join(@root, c))
+        Tester::Context.new(File.join(@root, c), @base)
       end
     end
     def run!

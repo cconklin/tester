@@ -3,7 +3,7 @@ require "tester/context"
 
 describe Tester::Context do
   describe "loading tests" do
-    let(:context) { Tester::Context.new("some_directory") }
+    let(:context) { Tester::Context.new("some_directory", "some_directory") }
     context "with no before or after" do
       before do
         allow(Dir).to receive(:entries).with("some_directory").and_return([".", "..", "a_context", "a_test"])
@@ -12,13 +12,13 @@ describe Tester::Context do
       end
       it "should find test files" do
         test = double(Tester::Test)
-        allow(Tester::Test).to receive(:new).with("some_directory/a_test").and_return(test)
+        allow(Tester::Test).to receive(:new).with("some_directory/a_test", "some_directory").and_return(test)
         expect(context.tests).to eq([test])
       end
       it "should find contexts" do
         context # Create the context before the contructor is stubbed
         inner_context = double(Tester::Context)
-        allow(Tester::Context).to receive(:new).with("some_directory/a_context").and_return(inner_context)
+        allow(Tester::Context).to receive(:new).with("some_directory/a_context", "some_directory").and_return(inner_context)
         expect(context.contexts).to eq([inner_context])
       end
     end
@@ -29,7 +29,7 @@ describe Tester::Context do
       end
       it "should not have the before in its tests" do
         test = double(Tester::Test)
-        allow(Tester::Test).to receive(:new).with("some_directory/a_test").and_return(test)
+        allow(Tester::Test).to receive(:new).with("some_directory/a_test", "some_directory").and_return(test)
         expect(context.tests).to eq([test])
       end
     end
@@ -40,13 +40,13 @@ describe Tester::Context do
       end
       it "should not have the after in its tests" do
         test = double(Tester::Test)
-        allow(Tester::Test).to receive(:new).with("some_directory/a_test").and_return(test)
+        allow(Tester::Test).to receive(:new).with("some_directory/a_test", "some_directory").and_return(test)
         expect(context.tests).to eq([test])
       end
     end
   end
   describe "running tests" do
-    let(:context) { Tester::Context.new("some_directory") }
+    let(:context) { Tester::Context.new("some_directory", "some_directory") }
     # The UUT should not be partially mocked this much
     context "if the before fails" do
       let(:before) { double("before", passed?: false, file: "some_directory/before") }
@@ -128,7 +128,7 @@ describe Tester::Context do
     end
   end
   describe "listing tests" do
-    let(:context) { Tester::Context.new("some_directory") }
+    let(:context) { Tester::Context.new("some_directory", "some_directory") }
     let(:test) { double(Tester::Test, skipped?: true, failed?:false, ran?: true) }
     let(:another_test) { double(Tester::Test, failed?: true, skipped?: false, ran?: true) }
     let(:ignored_test) { double(Tester::Test, failed?: false, skipped?: false, ran?: false) }
