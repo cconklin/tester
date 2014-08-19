@@ -66,6 +66,13 @@ module Tester
       all_tests.reject(&:ran?)
     end
 
+    def ran
+      all_tests.select(&:ran?)
+    end
+
+    def passed
+      all_tests.select(&:passed?)
+    end
     private
    
     def run_tests!

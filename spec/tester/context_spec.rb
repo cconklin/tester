@@ -149,5 +149,14 @@ describe Tester::Context do
     it "should list the tests that were not run" do
       expect(context.ignored).to eq([ignored_test])
     end
+    it "should list the tests that ran" do
+      expect(context.ran).to eq([test, another_test])
+    end
+    it "should list the tests that passed" do
+      passed_test = double("test", passed?: true)
+      allow(context).to receive(:tests).and_return([passed_test])
+      allow(context).to receive(:contexts).and_return([])
+      expect(context.passed).to eq([passed_test])
+    end
   end
 end

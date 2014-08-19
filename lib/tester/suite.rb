@@ -25,6 +25,8 @@ module Tester
       ignored.each.with_index do |test, index|
         Reporter.display index + 1, test.epilogue
       end
+      Reporter.epilogue ran.count, failures.count, skipped.count, ignored.count
+      puts
     end
     def all_tests
       @contexts.map {|c| c.all_tests }.inject(:+)
@@ -37,6 +39,12 @@ module Tester
     end
     def ignored
       @contexts.map(&:ignored).inject(:+)
+    end
+    def ran
+      @contexts.map(&:ran).inject(:+)
+    end
+    def passed
+      @contexts.map(&:passed).inject(:+)
     end
   end
 end
