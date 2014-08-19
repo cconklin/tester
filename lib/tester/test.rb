@@ -9,7 +9,7 @@ module Tester
     end
 
     attr_reader :file, :result, :base
-    attr_accessor :reason
+    attr_writer :reason
     def initialize(file, base)
       @file = file
       @base = base
@@ -18,6 +18,14 @@ module Tester
     
     def name
       file.partition(base).last.gsub(/[_\/]/, " ").strip
+    end
+
+    def reason
+      if @reason.to_s.empty?
+        "No Reason Given"
+      else
+        @reason
+      end
     end
 
     def ran?
