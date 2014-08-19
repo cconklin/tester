@@ -59,7 +59,7 @@ describe Tester::Test do
     context "that passes" do
       before do
         %x{ exit 0 }
-        allow(test).to receive(:`).with("a_file").and_return("a result")
+        allow(test).to receive(:`).with("a_file 2>1").and_return("a result")
         test.run!
       end
       it "should set the result to passing" do
@@ -78,7 +78,7 @@ describe Tester::Test do
     context "that fails" do
       before do
         %x{ exit 1 }
-        allow(test).to receive(:`).with("a_file").and_return("a result")
+        allow(test).to receive(:`).with("a_file 2>1").and_return("a result")
         test.run!
       end
       it "should set the result to failing" do
@@ -97,7 +97,7 @@ describe Tester::Test do
     context "that was skipped" do
       before do
         %x{ exit 2 }
-        allow(test).to receive(:`).with("a_file").and_return("a result")
+        allow(test).to receive(:`).with("a_file 2>1").and_return("a result")
         test.run!
       end
       it "should set the result to skipped" do

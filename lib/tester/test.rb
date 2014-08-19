@@ -34,12 +34,13 @@ module Tester
 
     def run!
       if File.executable? file
-        @reason = %x[#{file}] # Run the test file
+        @reason = %x[#{file} 2>1] # Run the test file
         # Capture the exit status, and map to a result object
         @result = case $?.exitstatus
         when 0; Result::Pass
         when 1; Result::Fail
         when 2; Result::Skip
+        else; Result::Fail
         end
       else
         @reason = NotExecutable
