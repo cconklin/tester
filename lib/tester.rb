@@ -18,7 +18,6 @@ module Tester
     end.parse!
     Tester::Reporter.colored = options[:color]
     Tester::Suite.new(ARGV).run!
-    puts
   end
 end
 

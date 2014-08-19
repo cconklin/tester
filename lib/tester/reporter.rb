@@ -25,6 +25,7 @@ module Tester
       lines.each do |line|
         puts "    " + line
       end
+      puts
     end
   end
 end
