@@ -11,17 +11,15 @@ describe Tester::ContextHook do
     context "with an existing executable" do
       before { allow(File).to receive(:exists?).with(file).and_return(true) }
       it "should report as passing when the executable exits 0" do
-        # Kernel#system takes an executable as an argument, and returns
-        # true if it exited 0, nil if it did not execute, false otherwise
-        allow(hook).to receive(:system).with(file).and_return(true)
+        allow(Tester::Runner).to receive(:run).with(file).and_return(double("runner", exitstatus: 0))
         expect(hook.passed?).to eq(true)
       end
       it "should not report as passing when the executable does not exit 0" do
-        allow(hook).to receive(:system).with(file).and_return(false)
+        allow(Tester::Runner).to receive(:run).with(file).and_return(double("runner", exitstatus: 1))
         expect(hook.passed?).to eq(false)
       end
       it "should not report as passing when the file is not executable" do
-        allow(hook).to receive(:system).with(file).and_return(nil)
+        allow(Tester::Runner).to receive(:run).with(file).and_return(double("runner", exitstatus: nil))
         expect(hook.passed?).to eq(false)
       end
     end

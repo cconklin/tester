@@ -43,23 +43,22 @@ describe Tester::Test do
     context "that cannot run" do
       let(:bad_test) { Tester::Test.new("not_executable", "") }
       before do
-        allow(File).to receive(:executable?).with("not_executable").and_return(false)
+        allow(Tester::Runner).to receive(:run).with("not_executable").and_return(double("result", exitstatus: nil, stdout: Tester::Runner::NotExecutable, stderr: Tester::Runner::NotExecutable))
         bad_test.run!
       end
-      it "should raise an exception when the file is not executable" do
+      it "should set the result when the file is not executable" do
         expect(bad_test.result).to eq(Tester::Result::NoResult)
       end
       it "should report as not having run" do
         expect(bad_test.ran?).to eq(false)
       end
       it "should set the reason to NotExecutable" do
-        expect(bad_test.reason).to eq(Tester::Test::NotExecutable)
+        expect(bad_test.reason).to eq(Tester::Runner::NotExecutable)
       end
     end
     context "that passes" do
       before do
-        %x{ exit 0 }
-        allow(test).to receive(:`).with("a_file 2>1").and_return("a result")
+        allow(Tester::Runner).to receive(:run).with("a_file").and_return(double("runner", exitstatus: 0, stdout: "a result"))
         test.run!
       end
       it "should set the result to passing" do
@@ -77,8 +76,7 @@ describe Tester::Test do
     end
     context "that fails" do
       before do
-        %x{ exit 1 }
-        allow(test).to receive(:`).with("a_file 2>1").and_return("a result")
+        allow(Tester::Runner).to receive(:run).with("a_file").and_return(double("runner", exitstatus: 1, stdout: "a result"))
         test.run!
       end
       it "should set the result to failing" do
@@ -96,8 +94,7 @@ describe Tester::Test do
     end
     context "that was skipped" do
       before do
-        %x{ exit 2 }
-        allow(test).to receive(:`).with("a_file 2>1").and_return("a result")
+        allow(Tester::Runner).to receive(:run).with("a_file").and_return(double("runner", exitstatus: 2, stdout: "a result"))
         test.run!
       end
       it "should set the result to skipped" do

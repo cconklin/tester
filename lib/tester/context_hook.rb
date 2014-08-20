@@ -1,3 +1,5 @@
+require "tester/runner"
+
 module Tester
   class ContextHook
     attr_reader :file
@@ -5,12 +7,11 @@ module Tester
       @file = file
     end
     def run!
-      # Even though nil evaluates to false, force it to be returned as false
-      (system file) || false
+      Tester::Runner.run(file)
     end
     def passed?
       @passed ||= if File.exists? file
-        run!
+        run!.exitstatus == 0
       else
         true
       end

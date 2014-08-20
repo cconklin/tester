@@ -1,13 +1,8 @@
 require "tester/result"
+require "tester/runner"
+
 module Tester
   class Test
-    # Sentinel Object for tests that cannot be executed
-    class NotExecutable
-      def self.to_s
-        "The file was not executable"
-      end
-    end
-
     attr_reader :file, :result, :base
     attr_writer :reason
     def initialize(file, base)
@@ -33,17 +28,15 @@ module Tester
     end
 
     def run!
-      if File.executable? file
-        @reason = %x[#{file} 2>1] # Run the test file
-        # Capture the exit status, and map to a result object
-        @result = case $?.exitstatus
-        when 0; Result::Pass
-        when 1; Result::Fail
-        when 2; Result::Skip
-        else; Result::Fail
-        end
-      else
-        @reason = NotExecutable
+      result = Tester::Runner.run(file)
+      @reason = result.stdout
+      # Capture the exit status, and map to a result object
+      @result = case result.exitstatus
+      when 0; Result::Pass
+      when 1; Result::Fail
+      when 2; Result::Skip
+      when nil; Result::NoResult
+      else; Result::Fail
       end
     end
 
