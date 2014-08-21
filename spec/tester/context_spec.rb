@@ -73,24 +73,6 @@ describe Tester::Context do
         context.run!
       end
     end
-    context "reporting" do
-      let(:test) { double(Tester::Test, result: double("result")) }
-      let(:inner_context) { double(Tester::Context) }
-      before do
-        allow(context).to receive(:tests).and_return([test])
-        allow(context).to receive(:contexts).and_return([inner_context])
-      end
-      it "should report the tests" do
-        allow(inner_context).to receive(:report)
-        expect(Tester::Reporter).to receive(:report).with(test.result)
-        context.report
-      end
-      it "should report the contexts" do
-        allow(Tester::Reporter).to receive(:report).with(test.result)
-        expect(inner_context).to receive(:report)
-        context.report
-      end
-    end
     it "should run the tests if the before passes" do
       before = double("before", passed?: true)
       allow(context).to receive(:before).and_return(before)
@@ -125,6 +107,25 @@ describe Tester::Context do
       allow(context).to receive(:run_tests!)
       expect(after).to receive(:run!)
       context.run!
+    end
+  end
+  describe "reporting" do
+    let(:test) { double(Tester::Test, result: double("result")) }
+    let(:context) { Tester::Context.new("some_directory", "some_directory") }
+    let(:inner_context) { double(Tester::Context) }
+    before do
+      allow(context).to receive(:tests).and_return([test])
+      allow(context).to receive(:contexts).and_return([inner_context])
+    end
+    it "should report the tests" do
+      allow(inner_context).to receive(:report)
+      expect(Tester::Reporter).to receive(:report).with(test.result)
+      context.report
+    end
+    it "should report the contexts" do
+      allow(Tester::Reporter).to receive(:report).with(test.result)
+      expect(inner_context).to receive(:report)
+      context.report
     end
   end
   describe "listing tests" do
