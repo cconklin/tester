@@ -101,14 +101,25 @@ module Tester
     private
    
     def run_tests!
-      new_tests = tests.map do |test|
-        new_test = test.run!
-        Tester::Reporter.report new_test.result
-        new_test
+      # By avoiding mutation in the Test and Context objects, this is thread-safe
+      # Create threads for each test and context, then join them all for a result
+
+      # Create threads for tests
+      new_test_threads = tests.map do |test|
+        Thread.new do
+          new_test = test.run!
+          Tester::Reporter.report new_test.result
+          new_test
+        end
       end
-      new_contexts = contexts.map do |context|
-        context.run!
+      # Create threads for contexts
+      new_context_threads = contexts.map do |context|
+        Thread.new { context.run! }
       end
+      # Wait for threads to finish, then get values
+      new_tests = new_test_threads.map(&:join).map(&:value)
+      new_contexts = new_context_threads.map(&:join).map(&:value)
+      # Return a new context with these new tests and contexts to avoid mutation
       Tester::Context.new(@root, @base, new_tests, new_contexts)
     end
 
