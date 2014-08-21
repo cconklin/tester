@@ -21,11 +21,11 @@ module Tester
     
     attr_reader :tests, :contexts
 
-    def initialize(root, base)
+    def initialize(root, base, tests = nil, contexts = nil)
       @root = root
       @base = base
-      @tests = Context.tests(root, base)
-      @contexts = Context.contexts(root, base)
+      @tests = tests || Context.tests(root, base)
+      @contexts = contexts || Context.contexts(root, base)
     end
     
     # Find all files (not directories) in the context's directory
@@ -50,15 +50,16 @@ module Tester
       # Only run tests if the set-up passes
       if before.passed?
         # Run tests and report results
-        run_tests!
+        new_context = run_tests!
         # Run the clean-up file, if present
         after.run!
       else
         # The set-up file failed, All tests in this context and sub-contexts cannot be run.
-        set_no_run_reason! "Test set-up failed.\nFile: #{before.file}"
+        new_context = set_reason "Test set-up failed.\nFile: #{before.file}"
         # Report the results of tests
-        report
+        new_context.report
       end
+      new_context
     end
     
     # Report test results to the user
@@ -100,19 +101,25 @@ module Tester
     private
    
     def run_tests!
-      tests.each do |test|
-        test.run!
-        Tester::Reporter.report test.result
+      new_tests = tests.map do |test|
+        new_test = test.run!
+        Tester::Reporter.report new_test.result
+        new_test
       end
-      contexts.each do |context|
+      new_contexts = contexts.map do |context|
         context.run!
       end
+      Tester::Context.new(@root, @base, new_tests, new_contexts)
     end
 
-    def set_no_run_reason!(reason)
-      all_tests.each do |test|
-        test.reason = reason
+    def set_reason(reason)
+      new_tests = tests.map do |test|
+        test.set_reason reason
       end
+      new_contexts = contexts.map do |context|
+        context.reason = reason
+      end
+      Tester::Context.new(@root, @base, new_tests, new_contexts)
     end
 
   end

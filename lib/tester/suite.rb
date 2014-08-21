@@ -20,7 +20,7 @@ module Tester
     # Run the suite
     def run!
       # Time how long it takes to run the tests for all the contexts
-      time = Benchmark.measure { @contexts.each {|c| c.run! } }.real
+      time = Benchmark.measure { @contexts = @contexts.map {|c| c.run! } }.real
       report(time)
     end
 

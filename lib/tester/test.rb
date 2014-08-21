@@ -3,12 +3,12 @@ require "tester/runner"
 
 module Tester
   class Test
-    attr_reader :file, :result, :base
-    attr_writer :reason
-    def initialize(file, base)
+    attr_reader :file, :result, :base, :reason
+    def initialize(file, base, result = Result::NoResult, reason = "No Reason Given")
       @file = file
       @base = base
-      @result = Result::NoResult
+      @result = result
+      @reason = reason
     end
     
     # Turn the path into a test name
@@ -17,15 +17,9 @@ module Tester
       file.partition(base).last.gsub(/[_\/]/, " ").strip
     end
 
-    # Report a reason for test status, with default
-    def reason
-      if @reason.to_s.empty?
-        "No Reason Given"
-      else
-        @reason
-      end
+    def set_reason(new_reason)
+      Tester::Test.new(file, base, result, new_reason)
     end
-    
     # Report if a test ran.
     # All tests that ran have a result
     def ran?
@@ -35,16 +29,17 @@ module Tester
     # Run the test.
     # Convert the exitcode of the test into a result
     def run!
-      result = Tester::Runner.run(file)
-      @reason = result.stdout
+      test_result = Tester::Runner.run(file)
+      reason = test_result.stdout
       # Capture the exit status, and map to a result object
-      @result = case result.exitstatus
+      result = case test_result.exitstatus
       when 0; Result::Pass
       when 1; Result::Fail
       when 2; Result::Skip
       when nil; Result::NoResult
       else; Result::Fail # Might become error in the future
       end
+      Tester::Test.new(file, base, result, reason)
     end
 
     def passed?

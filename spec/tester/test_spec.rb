@@ -38,13 +38,12 @@ describe Tester::Test do
   describe "running a test" do
     let :test do
       allow(File).to receive(:executable?).with("a_file").and_return(true)
-      Tester::Test.new("a_file", "")
+      Tester::Test.new("a_file", "").run!
     end
     context "that cannot run" do
-      let(:bad_test) { Tester::Test.new("not_executable", "") }
+      let(:bad_test) { Tester::Test.new("not_executable", "").run! }
       before do
         allow(Tester::Runner).to receive(:run).with("not_executable").and_return(double("result", exitstatus: nil, stdout: Tester::Runner::NotExecutable, stderr: Tester::Runner::NotExecutable))
-        bad_test.run!
       end
       it "should set the result when the file is not executable" do
         expect(bad_test.result).to eq(Tester::Result::NoResult)
@@ -59,7 +58,6 @@ describe Tester::Test do
     context "that passes" do
       before do
         allow(Tester::Runner).to receive(:run).with("a_file").and_return(double("runner", exitstatus: 0, stdout: "a result"))
-        test.run!
       end
       it "should set the result to passing" do
         expect(test.result).to eq(Tester::Result::Pass)

@@ -69,21 +69,23 @@ describe Tester::Context do
       let(:inner_context) { double(Tester::Context, tests: []) }
       before do
         allow(context).to receive(:before).and_return(before)
-        allow(context).to receive(:all_tests).and_return([test])
+        allow(context).to receive(:tests).and_return([test])
       end
       it "should not run tests" do 
         allow(context).to receive(:report)
-        allow(context).to receive(:set_no_run_reason!)
+        allow(context).to receive(:set_reason).and_return(context)
         expect(context).to_not receive(:run_tests!)
         context.run!
       end
       it "should set its tests reason to its failure" do
-        allow(context).to receive(:report)
-        expect(test).to receive(:reason=).with("Test set-up failed.\nFile: some_directory/before")
+        context
+        new_context = double("context", report: nil)
+        allow(Tester::Context).to receive(:new).and_return(new_context)
+        expect(test).to receive(:set_reason).with("Test set-up failed.\nFile: some_directory/before")
         context.run!
       end
       it "should report results" do
-        allow(context).to receive(:set_no_run_reason!)
+        allow(context).to receive(:set_reason).and_return(context)
         expect(context).to receive(:report)
         context.run!
       end
@@ -106,14 +108,15 @@ describe Tester::Context do
       allow(context).to receive(:contexts).and_return([])
       allow(context).to receive(:tests).and_return([test])
       allow(Tester::Reporter).to receive(:report)
-      expect(test).to receive(:run!).once
+      expect(test).to receive(:run!).once.and_return(test)
       context.run!
     end
     it "should report the test results" do
-      test = double(Tester::Test, result: double("result"), run!: nil)
+      # Nested stubs, yikes!
+      test = double(Tester::Test, run!: double("test", result: double("result")))
       allow(context).to receive(:contexts).and_return([])
       allow(context).to receive(:tests).and_return([test])
-      expect(Tester::Reporter).to receive(:report).with(test.result).once
+      expect(Tester::Reporter).to receive(:report).with(test.run!.result).once
       context.run!
     end
     it "should run the after once the tests have completed" do
