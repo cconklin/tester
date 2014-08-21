@@ -2,6 +2,7 @@ require "tester/refinements/string"
 module Tester
   module Result
     
+    # use the string refinement which adds ANSI colors
     using Tester::Refinements::String
 
     class Base
@@ -22,6 +23,8 @@ module Tester
         "# #{file}".indent.blue
       end
     end
+    
+    # For tests that did not run
     class NoResult < Base
       def self.icon
         "?"
@@ -30,6 +33,8 @@ module Tester
         icon
       end
     end
+
+    # For tests that passed
     class Pass < Base
       def self.icon
         "."
@@ -38,12 +43,9 @@ module Tester
         icon.green
       end
     end
+
+    # For tests that failed
     class Fail < Base
-      def epilogue
-        "#{name}:" << "\n" <<
-        "#{reason}".indent(2) << "\n" <<
-        "# #{file}".indent
-      end
       def colored_epilogue  
         "#{name}:".red << "\n" <<
         "#{reason}".indent(2).red << "\n" <<
@@ -56,6 +58,8 @@ module Tester
         icon.red
       end
     end
+
+    # For tests that were skipped
     class Skip < Base
       def self.icon
         "*"

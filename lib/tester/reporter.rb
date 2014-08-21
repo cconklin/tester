@@ -4,13 +4,16 @@ module Tester
   module Reporter
     using Tester::Refinements::String
     extend self
-
+    
+    # Configuration to use ANSI colors in the tty.
     def colored=(colored)
       @@colored = colored
     end
     def colored?
       @@colored
     end
+
+    # Given a result from the result module, print it to the user.
     def report(result)
       if colored?
         print result.colored_icon
@@ -18,6 +21,8 @@ module Tester
         print result.icon
       end
     end
+    
+    # Display the text reason of why the test did what it did.
     def display(index, result)
       if colored?
         to_display = result.colored_epilogue
@@ -31,7 +36,9 @@ module Tester
       end
       puts
     end
-    
+
+    # Display the final result of the tests
+    # (Number ran, number of failures. etc)
     def epilogue(*args)
       if colored?
         puts colored_epilogue *args

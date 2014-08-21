@@ -11,10 +11,13 @@ module Tester
       @result = Result::NoResult
     end
     
+    # Turn the path into a test name
+    # 'base' is the test directory, and the path before it is stripped.
     def name
       file.partition(base).last.gsub(/[_\/]/, " ").strip
     end
 
+    # Report a reason for test status, with default
     def reason
       if @reason.to_s.empty?
         "No Reason Given"
@@ -22,11 +25,15 @@ module Tester
         @reason
       end
     end
-
+    
+    # Report if a test ran.
+    # All tests that ran have a result
     def ran?
       @result != Result::NoResult
     end
 
+    # Run the test.
+    # Convert the exitcode of the test into a result
     def run!
       result = Tester::Runner.run(file)
       @reason = result.stdout
@@ -36,7 +43,7 @@ module Tester
       when 1; Result::Fail
       when 2; Result::Skip
       when nil; Result::NoResult
-      else; Result::Fail
+      else; Result::Fail # Might become error in the future
       end
     end
 
@@ -51,7 +58,8 @@ module Tester
     def skipped?
       @result == Result::Skip
     end
-
+    
+    # Get the reason for why a test had the result it did.
     def epilogue
       result.new(name, reason, file)
     end
