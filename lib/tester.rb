@@ -9,14 +9,18 @@ require 'optparse'
 
 module Tester
   def self.main
-    options = {color: false}
+    options = {color: false, async: true}
     OptionParser.new do |opts|
       opts.banner = "Usage: tester.rb [options]"
       opts.on("-c", "--[no-]color", "Run with color") do |v|
         options[:color] = v
       end
+      opts.on("--[no-]async", "Run tests asynchronously") do |a|
+        options[:async] = a
+      end
     end.parse!
     Tester::Reporter.colored = options[:color]
+    Tester::Context.async = options[:async]
     Tester::Suite.new(ARGV).run!
   end
 end

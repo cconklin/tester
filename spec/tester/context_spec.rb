@@ -56,13 +56,12 @@ describe Tester::Context do
       end
     end
   end
-  describe "running tests" do
-    let(:context) { Tester::Context.new("some_directory", "some_directory") }
-    before do  
-      allow(Tester::Context).to receive(:tests).and_return([])
-      allow(Tester::Context).to receive(:contexts).and_return([])
+  describe "running asynchronous tests" do
+    before do
+      Tester::Context.async = true
     end
-      # The UUT should not be partially mocked this much
+    let(:context) { Tester::Context.new("some_directory", "some_directory", [], []) }
+    # The UUT should not be partially mocked this much
     context "if the before fails" do
       let(:before) { double("before", passed?: false, file: "some_directory/before") }
       let(:test) { double(Tester::Test, result: double("result")) }
@@ -89,6 +88,91 @@ describe Tester::Context do
         expect(context).to receive(:report)
         context.run!
       end
+    end
+    it "should run the tests if the before passes" do
+      before = double("before", passed?: true)
+      allow(context).to receive(:before).and_return(before)
+      expect(context).to receive(:run_tests_async!)
+      context.run!
+    end
+    it "should run the contexts" do
+      inner_context = double(Tester::Context)
+      allow(context).to receive(:contexts).and_return([inner_context])
+      allow(context).to receive(:tests).and_return([])
+      expect(inner_context).to receive(:run!).once
+      context.run!
+    end
+    it "should run the tests" do
+      test = double(Tester::Test, result: nil)
+      allow(context).to receive(:contexts).and_return([])
+      allow(context).to receive(:tests).and_return([test])
+      allow(Tester::Reporter).to receive(:report)
+      expect(test).to receive(:run!).once.and_return(test)
+      context.run!
+    end
+    it "should report the test results" do
+      # Nested stubs, yikes!
+      test = double(Tester::Test, run!: double("test", result: double("result")))
+      allow(context).to receive(:contexts).and_return([])
+      allow(context).to receive(:tests).and_return([test])
+      expect(Tester::Reporter).to receive(:report).with(test.run!.result).once
+      context.run!
+    end
+    it "should run the after once the tests have completed" do
+      after = double("after")
+      allow(context).to receive(:after).and_return(after)
+      allow(context).to receive(:run_tests_async!)
+      expect(after).to receive(:run!)
+      context.run!
+    end
+   it "should create threads" do
+      # Use the full constructor to avoid automatic test lookup
+      test = double("test", run!: double("ran_test", result: nil))
+      allow(Tester::Reporter).to receive(:report)
+      context = Tester::Context.new("some_directory", "some_directory", [test], [])
+      expect(Thread).to receive(:new).and_call_original
+      context.run!
+    end
+  end
+  describe "running tests" do
+    let(:context) { Tester::Context.new("some_directory", "some_directory", [], []) }
+    before do
+      Tester::Context.async = false
+    end
+    # The UUT should not be partially mocked this much
+    context "if the before fails" do
+      let(:before) { double("before", passed?: false, file: "some_directory/before") }
+      let(:test) { double(Tester::Test, result: double("result")) }
+      let(:inner_context) { double(Tester::Context, tests: []) }
+      before do
+        allow(context).to receive(:before).and_return(before)
+        allow(context).to receive(:tests).and_return([test])
+      end
+      it "should not run tests" do 
+        allow(context).to receive(:report)
+        allow(context).to receive(:set_reason).and_return(context)
+        expect(context).to_not receive(:run_tests!)
+        context.run!
+      end
+      it "should set its tests reason to its failure" do
+        context
+        new_context = double("context", report: nil)
+        allow(Tester::Context).to receive(:new).and_return(new_context)
+        expect(test).to receive(:set_reason).with("Test set-up failed.\nFile: some_directory/before")
+        context.run!
+      end
+      it "should report results" do
+        allow(context).to receive(:set_reason).and_return(context)
+        expect(context).to receive(:report)
+        context.run!
+      end
+    end
+    it "should not use threads" do
+      inner_context = double("context", run!: double("ran_context"))
+      context = Tester::Context.new("some_directory", "some_directory", [double("test", run!: double("ran_test", result: nil))], [inner_context])
+      allow(Tester::Reporter).to receive(:report)
+      expect(Thread).to_not receive(:new)
+      context.run!
     end
     it "should run the tests if the before passes" do
       before = double("before", passed?: true)

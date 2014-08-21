@@ -4,6 +4,16 @@ require "tester/reporter"
 
 module Tester
   class Context
+    
+    # Define whether tests will run asynchronously
+    def self.async=(bool)
+      @@async = bool
+    end
+    
+    def self.async?
+      @@async
+    end
+
     # Define the hooks that are run before or after tests
     # This will probably be refactored into the ContextHook class
     # to allow for more flexible hooks.
@@ -50,7 +60,11 @@ module Tester
       # Only run tests if the set-up passes
       if before.passed?
         # Run tests and report results
-        new_context = run_tests!
+        new_context = if Context.async?
+                        run_tests_async!
+                      else
+                        run_tests!
+                      end
         # Run the clean-up file, if present
         after.run!
       else
@@ -101,6 +115,19 @@ module Tester
     private
    
     def run_tests!
+      # Run tests and contexts synchronously
+      new_tests = tests.map do |test|
+        new_test = test.run!
+        Tester::Reporter.report new_test.result
+        new_test
+      end
+      new_contexts = contexts.map do |context|
+        context.run!
+      end
+      # Return a new context with these new tests and contexts to avoid mutation
+      Tester::Context.new(@root, @base, new_tests, new_contexts)
+    end
+    def run_tests_async!
       # By avoiding mutation in the Test and Context objects, this is thread-safe
       # Create threads for each test and context, then join them all for a result
 
