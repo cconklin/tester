@@ -16,9 +16,23 @@ describe Tester::Runner do
       expect(result.stderr).to eq("err")
     end
   end
-  context "on a non-executable file" do
+  context "on a non-existent file" do
     before do
       allow(Open3).to receive(:capture3).and_raise(Errno::ENOENT)
+    end
+    it "should get the exit status" do
+      expect(result.exitstatus).to eq(nil)
+    end
+    it "should get the stdout" do
+      expect(result.stdout).to eq(Tester::Runner::NotExecutable)
+    end
+    it "should get the stderr" do
+      expect(result.stderr).to eq(Tester::Runner::NotExecutable)
+    end
+  end
+  context "on a non-executable file" do
+    before do
+      allow(Open3).to receive(:capture3).and_raise(Errno::EACCES)
     end
     it "should get the exit status" do
       expect(result.exitstatus).to eq(nil)
