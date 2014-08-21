@@ -18,25 +18,29 @@ module Tester
         Tester::ContextHook.new(File.join(@root, name))
       end
     end
+    
+    attr_reader :tests, :contexts
 
     def initialize(root, base)
       @root = root
       @base = base
+      @tests = Context.tests(root, base)
+      @contexts = Context.contexts(root, base)
     end
     
     # Find all files (not directories) in the context's directory
     # Ignore context hooks that run before or after tests
-    def tests
-      @tests ||= Dir.entries(@root).select { |e| File.file?(File.join(@root, e)) and not Context.hook?(e) }.map do |t|
-        Tester::Test.new(File.join(@root, t), @base)
+    def self.tests(root, base)
+      Dir.entries(root).select { |e| File.file?(File.join(root, e)) and not hook?(e) }.map do |t|
+        Tester::Test.new(File.join(root, t), base)
       end
     end
     
     # Find all directories in the context's directory
     # Ignore the directories "." and ".." to avoid infinite recursion
-    def contexts
-      @contexts ||= Dir.entries(@root).reject { |e| File.file?(File.join(@root, e)) or [".", ".."].include?(e) }.map do |c|
-        Tester::Context.new(File.join(@root, c), @base)
+    def self.contexts(root, base)
+      Dir.entries(root).reject { |e| File.file?(File.join(root, e)) or [".", ".."].include?(e) }.map do |c|
+        Tester::Context.new(File.join(root, c), base)
       end
     end
 
