@@ -9,7 +9,7 @@ require 'optparse'
 
 module Tester
   def self.main
-    options = {color: false, async: true}
+    options = {color: true, async: true}
     OptionParser.new do |opts|
       opts.banner = "Usage: tester.rb [options]"
       opts.on("-c", "--[no-]color", "Run with color") do |v|
