@@ -39,9 +39,9 @@ Any other returncodes are currently reported as failing, though this is subject 
 
 When run on the console, characters will appear corresponding to the status of the test.
 
-Pass => . (green if colors are enabled)
-Fail => F (red if colors are enabled)
-Skip => * (yellow if colors are enabled)
+* Pass => . (green if colors are enabled)
+* Fail => F (red if colors are enabled)
+* Skip => * (yellow if colors are enabled)
 
 If a test fails to run, either because it is not executable, or because the before fails, the character will be a `?`
 
