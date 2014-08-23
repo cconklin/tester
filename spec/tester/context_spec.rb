@@ -116,7 +116,7 @@ describe Tester::Context do
         it "should report the test results" do
           allow(context).to receive(:contexts).and_return([])
           allow(context).to receive(:tests).and_return([test])
-          expect(Tester::Reporter).to receive(:report).with(test.run!.result).once
+          expect(Tester::Reporter).to receive(:report).with(test.run!).once
           context.run!
         end
         it "should run the after once the tests have completed" do
@@ -199,7 +199,7 @@ describe Tester::Context do
         end
         it "should report the test results" do
           allow(context).to receive(:tests).and_return([test])
-          expect(Tester::Reporter).to receive(:report).with(test.run!.result).once
+          expect(Tester::Reporter).to receive(:report).with(test.run!).once
           context.run!
         end
         it "should run the after once the tests have completed" do
@@ -218,11 +218,11 @@ describe Tester::Context do
     let(:inner_context) { double(Tester::Context) }
     it "should send tests to the reporter" do
       allow(inner_context).to receive(:report)
-      expect(Tester::Reporter).to receive(:report).with(test.result)
+      expect(Tester::Reporter).to receive(:report).with(test)
       context.report
     end
     it "should call report on the contexts" do
-      allow(Tester::Reporter).to receive(:report).with(test.result)
+      allow(Tester::Reporter).to receive(:report).with(test)
       expect(inner_context).to receive(:report)
       context.report
     end

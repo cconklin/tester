@@ -39,15 +39,15 @@ module Tester
       puts "Failures:" unless failures.empty?
       failures.each.with_index do |test, index|
         # Indexing starts at 0, make it start at 1
-        Reporter.display index + 1, test.epilogue
+        Reporter.display index + 1, test
       end
       puts "Skipped:" unless skipped.empty?
       skipped.each.with_index do |test, index|
-        Reporter.display index + 1, test.epilogue
+        Reporter.display index + 1, test
       end
       puts "Not Run:" unless ignored.empty?
       ignored.each.with_index do |test, index|
-        Reporter.display index + 1, test.epilogue
+        Reporter.display index + 1, test
       end
       puts "Finished in #{@run_time} seconds (files took #{@load_time} seconds to load)"
       Reporter.epilogue all_tests.count, failures.count, skipped.count, ignored.count

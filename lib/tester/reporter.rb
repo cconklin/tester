@@ -15,17 +15,17 @@ module Tester
       @@formatter
     end
 
-    def report(result)
+    def report(test)
       if formatter.inline
-        print formatter.formatted_symbol(result)
+        print formatter.formatted_symbol(test)
       else
-        puts formatter.formatted_symbol(result)
+        puts formatter.formatted_symbol(test)
       end
     end
 
     # Display the text reason of why the test did what it did.
-    def display(index, result)
-      lines = formatter.display(result).split("\n")
+    def display(index, test)
+      lines = formatter.display(test).split("\n")
       puts "%4s) #{lines.shift}" % index
       lines.each do |line|
         puts "    " + line

@@ -11,7 +11,7 @@ describe Tester::Reporter do
       it "should display the icon" do
         expect(formatter).to receive(:formatted_symbol)
         expect(Tester::Reporter).to receive(:print)
-        Tester::Reporter.report Tester::Result::Pass
+        Tester::Reporter.report double("test", result: Tester::Result::Pass)
       end
     end
     context "line delimited" do
@@ -22,7 +22,7 @@ describe Tester::Reporter do
       it "should display the icon" do
         expect(formatter).to receive(:formatted_symbol)
         expect(Tester::Reporter).to receive(:puts)
-        Tester::Reporter.report Tester::Result::Pass
+        Tester::Reporter.report double("test", result: Tester::Result::Pass)
       end
     end
   end

@@ -23,13 +23,13 @@ module Tester
       ignore: Tester::Result::NoResult
     }.each do |meth, result|
       define_method meth do |symbol, color: :default|
-        @symbols[result] = symbol
+        @symbols[result] = ->(test) { symbol }
         @colors[result] = color
       end
     end
     # Accessor methods for the symbol and color
-    def symbol(result)
-      @symbols[result]
+    def symbol(test)
+      @symbols[test.result].call(test)
     end
     def color(result)
       @colors[result]
@@ -39,24 +39,24 @@ module Tester
       @colored
     end
 
-    def formatted_symbol(result)
+    def formatted_symbol(test)
       if colored?
         # Get the color of the result, apply it to the symbol
-        symbol(result).color(color(result))
+        symbol(test).color(color(test.result))
       else
-        symbol(result)
+        symbol(test)
       end
     end
     
-    def display(result)
+    def display(test)
       if colored?
-        "#{result.name}:".color(color(result.class)) << "\n" <<
-        "#{result.reason}".strip.color(color(result.class)).indent(2) << "\n" <<
-        "# #{result.file}".indent.color(:blue)
+        "#{test.name}:".color(color(test.result)) << "\n" <<
+        "#{test.reason}".strip.color(color(test.result)).indent(2) << "\n" <<
+        "# #{test.file}".indent.color(:blue)
       else
-        "#{result.name}:" << "\n" <<
-        "#{result.reason}".strip.indent(2) << "\n" <<
-        "# #{result.file}".indent
+        "#{test.name}:" << "\n" <<
+        "#{test.reason}".strip.indent(2) << "\n" <<
+        "# #{test.file}".indent
       end
     end
 

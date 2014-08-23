@@ -79,7 +79,7 @@ module Tester
     # Report test results to the user
     def report
       tests.each do |test|
-        Tester::Reporter.report test.result
+        Tester::Reporter.report test
       end
       contexts.each do |context|
         context.report
@@ -118,7 +118,7 @@ module Tester
       # Run tests and contexts synchronously
       new_tests = tests.map do |test|
         new_test = test.run!
-        Tester::Reporter.report new_test.result
+        Tester::Reporter.report new_test
         new_test
       end
       new_contexts = contexts.map do |context|
@@ -135,7 +135,7 @@ module Tester
       new_test_threads = tests.map do |test|
         Thread.new do
           new_test = test.run!
-          Tester::Reporter.report new_test.result
+          Tester::Reporter.report new_test
           new_test
         end
       end

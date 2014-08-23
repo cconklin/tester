@@ -20,59 +20,61 @@ describe Tester::Formatter do
     expect(formatter.colored?).to eq(true)
   end
   describe "defining passing behavior" do
+    let(:test) { double("test", result: Tester::Result::Pass) }
     it "should accept a 'symbol'" do
       formatter = Tester::Formatter.new("my_formatter")
       formatter.pass(".")
-      expect(formatter.symbol(Tester::Result::Pass)).to eq(".")
+      expect(formatter.symbol(test)).to eq(".")
     end
     it "should default to a default color" do
       formatter = Tester::Formatter.new("my_formatter")
       formatter.pass(".")
-      expect(formatter.color(Tester::Result::Pass)).to eq(:default)
+      expect(formatter.color(test.result)).to eq(:default)
     end
     it "should allow colors to be overridden" do
       formatter = Tester::Formatter.new("my_formatter")
       formatter.pass(".", color: :green)
-      expect(formatter.color(Tester::Result::Pass)).to eq(:green)
+      expect(formatter.color(test.result)).to eq(:green)
     end
     it "should color the symbol when colors are enabled" do
       formatter = Tester::Formatter.new("my_formatter")
       formatter.colored = true
       formatter.pass("green", color: :green)
-      expect(formatter.formatted_symbol(Tester::Result::Pass)).to eq("\033[32mgreen\033[0m")
+      expect(formatter.formatted_symbol(test)).to eq("\033[32mgreen\033[0m")
     end
     it "should not color the symbol when color are enabled" do
       formatter = Tester::Formatter.new("my_formatter")
       formatter.pass(".", color: :green)
-      expect(formatter.formatted_symbol(Tester::Result::Pass)).to eq(".")
+      expect(formatter.formatted_symbol(test)).to eq(".")
     end
   end
   describe "defining failing behavior" do
+    let(:test) { double("test", result: Tester::Result::Fail) }
     it "should accept a 'symbol'" do
       formatter = Tester::Formatter.new("my_formatter")
       formatter.fail(".")
-      expect(formatter.symbol(Tester::Result::Fail)).to eq(".")
+      expect(formatter.symbol(test)).to eq(".")
     end
     it "should default to a default color" do
       formatter = Tester::Formatter.new("my_formatter")
       formatter.fail(".")
-      expect(formatter.color(Tester::Result::Fail)).to eq(:default)
+      expect(formatter.color(test.result)).to eq(:default)
     end
     it "should allow colors to be overridden" do
       formatter = Tester::Formatter.new("my_formatter")
       formatter.fail(".", color: :green)
-      expect(formatter.color(Tester::Result::Fail)).to eq(:green)
+      expect(formatter.color(test.result)).to eq(:green)
     end
     it "should color the symbol when colors are enabled" do
       formatter = Tester::Formatter.new("my_formatter")
       formatter.colored = true
       formatter.fail("green", color: :green)
-      expect(formatter.formatted_symbol(Tester::Result::Fail)).to eq("\033[32mgreen\033[0m")
+      expect(formatter.formatted_symbol(test)).to eq("\033[32mgreen\033[0m")
     end
     it "should not color the symbol when colors are disabled" do
       formatter = Tester::Formatter.new("my_formatter")
       formatter.fail(".", color: :green)
-      expect(formatter.formatted_symbol(Tester::Result::Fail)).to eq(".")
+      expect(formatter.formatted_symbol(test)).to eq(".")
     end
   end
   describe "the DSL" do
@@ -85,9 +87,10 @@ describe Tester::Formatter do
       end
     end
     it "should set up the formatter" do
+      test = double("test", result: Tester::Result::Skip)
       formatter = Tester::Formatter.formatter("test_format")
-      expect(formatter.symbol(Tester::Result::Skip)).to eq("*")
-      expect(formatter.color(Tester::Result::Skip)).to eq(:yellow)
+      expect(formatter.symbol(test)).to eq("*")
+      expect(formatter.color(test.result)).to eq(:yellow)
     end
   end
 end
