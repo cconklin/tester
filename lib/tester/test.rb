@@ -30,7 +30,11 @@ module Tester
     # Convert the exitcode of the test into a result
     def run!
       test_result = Tester::Runner.run(file)
-      reason = test_result.stdout
+      if test_result.stdout.to_s.empty?
+        new_reason = reason
+      else
+        new_reason = test_result.stdout 
+      end
       # Capture the exit status, and map to a result object
       result = case test_result.exitstatus
       when 0; Result::Pass
@@ -39,7 +43,7 @@ module Tester
       when nil; Result::NoResult
       else; Result::Fail # Might become error in the future
       end
-      Tester::Test.new(file, base, result, reason)
+      Tester::Test.new(file, base, result, new_reason)
     end
 
     def passed?
