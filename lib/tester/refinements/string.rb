@@ -13,17 +13,24 @@ module Tester
             "  " * amount + line
           end.join("\n")
         end
-        def red
-          "\33[31m#{self}\33[0m"
+        {
+          red: 31,
+          green: 32,
+          yellow: 33,
+          blue: 34,
+          magenta: 35,
+          cyan: 36,
+          default: 39
+        }.each do |color, code|
+          define_method color do
+            "\33[#{code}m#{self}\33[0m"
+          end
+          define_method "bright_#{color}" do
+            "\33[1;#{code}m#{self}\33[0m"
+          end
         end
-        def green
-          "\33[32m#{self}\33[0m"
-        end
-        def yellow
-          "\33[33m#{self}\33[0m"
-        end
-        def blue
-          "\33[34m#{self}\33[0m"
+        def color(color)
+          eval("self.#{color}")
         end
       end
     end

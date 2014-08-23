@@ -1,35 +1,31 @@
 require "tester/refinements/string"
+require "tester/result"
+require "tester/formatter"
 
 module Tester
   module Reporter
     using Tester::Refinements::String
     extend self
     
-    # Configuration to use ANSI colors in the tty.
-    def colored=(colored)
-      @@colored = colored
-    end
-    def colored?
-      @@colored
-    end
-
-    # Given a result from the result module, print it to the user.
-    def report(result)
-      if colored?
-        print result.colored_icon
-      else
-        print result.icon
-      end
+    def formatter=(formatter)
+      @@formatter = formatter
     end
     
+    def formatter
+      @@formatter
+    end
+
+    def report(result)
+      if formatter.inline
+        print formatter.formatted_symbol(result)
+      else
+        puts formatter.formatted_symbol(result)
+      end
+    end
+
     # Display the text reason of why the test did what it did.
     def display(index, result)
-      if colored?
-        to_display = result.colored_epilogue
-      else
-        to_display = result.epilogue
-      end
-      lines = to_display.split("\n")
+      lines = formatter.display(result).split("\n")
       puts "%4s) #{lines.shift}" % index
       lines.each do |line|
         puts "    " + line
@@ -40,7 +36,7 @@ module Tester
     # Display the final result of the tests
     # (Number ran, number of failures. etc)
     def epilogue(*args)
-      if colored?
+      if formatter.colored?
         puts colored_epilogue *args
       else
         puts colorless_epilogue *args
@@ -51,15 +47,15 @@ module Tester
       if failed == 0
         if skipped == 0
           if ignored == 0
-            colorless_epilogue(examples, failed, skipped, ignored).green
+            colorless_epilogue(examples, failed, skipped, ignored).color(formatter.color(Tester::Result::Pass))
           else
-            colorless_epilogue(examples, failed, skipped, ignored)
+            colorless_epilogue(examples, failed, skipped, ignored).color(formatter.color(Tester::Result::NoResult))
           end
         else
-          colorless_epilogue(examples, failed, skipped, ignored).yellow
+          colorless_epilogue(examples, failed, skipped, ignored).color(formatter.color(Tester::Result::Skip))
         end
       else
-        colorless_epilogue(examples, failed, skipped, ignored).red
+        colorless_epilogue(examples, failed, skipped, ignored).color(formatter.color(Tester::Result::Fail))
       end
     end
 

@@ -2,36 +2,46 @@ require "spec_helper"
 require "tester/reporter"
 
 describe Tester::Reporter do
-  it "should display the #colored_icon when colors are enabled" do
-    result = double("Tester::Result", colored_icon: "colorful")
-    Tester::Reporter.colored = true
-    expect(Tester::Reporter).to receive(:print).with("colorful")
-    Tester::Reporter.report result
-  end
-  it "should call the #icon method when colors are disabled" do
-    result = double("Tester::Result", icon: "plain")
-    Tester::Reporter.colored = false
-    expect(Tester::Reporter).to receive(:print).with("plain")
-    Tester::Reporter.report result
-  end
-  it "should display epilogues" do
-    result = double("result", epilogue: "plain")
-    Tester::Reporter.colored = false
-    allow(Tester::Reporter).to receive(:puts)
-    expect(result).to receive(:epilogue)
-    Tester::Reporter.display 1, result
-  end
-  it "should display colored epilogues" do
-    result = double("result", colored_epilogue: "colorful")
-    Tester::Reporter.colored = true
-    allow(Tester::Reporter).to receive(:puts)
-    expect(result).to receive(:colored_epilogue)
-    Tester::Reporter.display 1, result
+  describe "reporting as tests return" do
+    context "inline" do
+      let(:formatter) { double("formatter", inline: true) }
+      before do
+        Tester::Reporter.formatter = formatter
+      end
+      it "should display the icon" do
+        expect(formatter).to receive(:formatted_symbol)
+        expect(Tester::Reporter).to receive(:print)
+        Tester::Reporter.report Tester::Result::Pass
+      end
+    end
+    context "line delimited" do
+      let(:formatter) { double("formatter", inline: false) }
+      before do
+        Tester::Reporter.formatter = formatter
+      end
+      it "should display the icon" do
+        expect(formatter).to receive(:formatted_symbol)
+        expect(Tester::Reporter).to receive(:puts)
+        Tester::Reporter.report Tester::Result::Pass
+      end
+    end
   end
   describe "reporting final results" do
-    context "without color" do
+    context "with color" do
+      let(:formatter) { double("formatter", colored?: true) }
       before do
-        Tester::Reporter.colored = false
+        Tester::Reporter.formatter = formatter
+        allow(formatter).to receive(:color).with(Tester::Result::Pass).and_return(:green)
+      end
+      it "should display in color" do
+        expect(Tester::Reporter).to receive(:puts).with("\033[32m5 examples, 0 failures\033[0m")
+        Tester::Reporter.epilogue(5, 0, 0, 0)
+      end
+    end
+    context "without color" do
+      let(:formatter) { double("formatter", colored?: false) }
+      before do
+        Tester::Reporter.formatter = formatter
       end
       it "should report the number of examples with no failures" do
         expect(Tester::Reporter).to receive(:puts).with("5 examples, 0 failures")

@@ -45,5 +45,22 @@ When run on the console, characters will appear corresponding to the status of t
 
 If a test fails to run, either because it is not executable, or because the before fails, the character will be a `?`
 
-Support for custom formatters will be added in the future.
+# Result Formatting
+
+It is possible to define a custom formatter by adding a file to the formatters directory
+
+```ruby
+Tester.format "standard", inline: true do
+  pass   ".", color: :green
+  fail   "F", color: :red
+  skip   "*", color: :yellow
+  ignore "?", color: :default
+end
+```
+
+The options for colors are red, cyan, yellow, red, green, magenta, blue, and default (which is the same as no color).
+
+The `inline` option specifies that the results are to be placed on the same line.
+
+The formatter can then be used by adding the flag `--format formatter_name`
 
