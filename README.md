@@ -50,7 +50,7 @@ If a test fails to run, either because it is not executable, or because the befo
 It is possible to define a custom formatter by adding a file to the formatters directory
 
 ```ruby
-Tester.format "standard", inline: true do
+Tester::Formatter.define_format "standard", inline: true do
   pass   ".", color: :green
   fail   "F", color: :red
   skip   "*", color: :yellow
@@ -60,7 +60,7 @@ end
 
 The options for colors are red, cyan, yellow, red, green, magenta, blue, and default (which is the same as no color).
 
-The `inline` option specifies that the results are to be placed on the same line.
+The `inline` option specifies that the results are to be placed on the same line. It defaults to true.
 
 The formatter can then be used by adding the flag `--format formatter_name`
 
