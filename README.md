@@ -55,6 +55,7 @@ Tester::Formatter.define_format "standard", inline: true do
   fail   "F", color: :red
   skip   "*", color: :yellow
   ignore "?", color: :default
+  error  "E"
 end
 ```
 
