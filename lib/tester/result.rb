@@ -3,32 +3,19 @@ require "tester/refinements/string"
 module Tester
   module Result
     
-    # use the string refinement which adds ANSI colors
-    using Tester::Refinements::String
-
-    class Base
-      attr_reader :name, :reason, :file
-      def initialize(name, reason, file)
-        @name = name
-        @reason = reason
-        @file = file
-      end
-    end
-    
     # For tests that did not run
-    class NoResult < Base
-    end
+    class NoResult; end
 
     # For tests that passed
-    class Pass < Base
-    end
+    class Pass; end
 
     # For tests that failed
-    class Fail < Base
-    end
+    class Fail; end
 
     # For tests that were skipped
-    class Skip < Base
-    end
+    class Skip; end
+
+    # For tests that errored
+    class Error; end
   end
 end

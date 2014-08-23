@@ -105,5 +105,20 @@ describe Tester::Test do
         expect(test.skipped?).to eq(true)  
       end
     end
+    context "that errored" do
+      before do
+        allow(Tester::Runner).to receive(:run).with("a_file").and_return(double("runner", exitstatus: 3, stdout: "a result", stderr: "error"))
+        test.run!
+      end
+      it "should set the result to error" do
+        expect(test.result).to eq(Tester::Result::Error)
+      end
+      it "should set the reason to the error of the test before the output" do
+        expect(test.reason).to eq("error\na result")
+      end
+      it "should report as errored" do
+        expect(test.errored?).to eq(true)  
+      end
+    end
   end
 end

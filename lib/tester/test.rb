@@ -30,7 +30,7 @@ module Tester
     # Convert the exitcode of the test into a result
     def run!
       test_result = Tester::Runner.run(file)
-      if test_result.stdout.to_s.empty?
+      if test_result.stdout.to_s.strip.empty?
         new_reason = reason
       else
         new_reason = test_result.stdout 
@@ -41,7 +41,9 @@ module Tester
       when 1; Result::Fail
       when 2; Result::Skip
       when nil; Result::NoResult
-      else; Result::Fail # Might become error in the future
+      else
+        new_reason = (test_result.stderr.strip + "\n" + new_reason.strip).strip
+        Result::Error
       end
       Tester::Test.new(file, base, result, new_reason)
     end
@@ -58,10 +60,8 @@ module Tester
       @result == Result::Skip
     end
     
-    # Get the reason for why a test had the result it did.
-    def epilogue
-      result.new(name, reason, file)
+    def errored?
+      @result == Result::Error
     end
-
   end
 end

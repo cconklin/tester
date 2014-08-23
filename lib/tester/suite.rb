@@ -38,7 +38,7 @@ module Tester
       # LoD violation
       puts if Reporter.formatter.inline
       puts "Failures:" unless failures.empty?
-      failures.each.with_index do |test, index|
+      (failures + errored).each.with_index do |test, index|
         # Indexing starts at 0, make it start at 1
         Reporter.display index + 1, test
       end
@@ -51,7 +51,7 @@ module Tester
         Reporter.display index + 1, test
       end
       puts "Finished in #{@run_time} seconds (files took #{@load_time} seconds to load)"
-      Reporter.epilogue all_tests.count, failures.count, skipped.count, ignored.count
+      Reporter.epilogue all_tests.count, failures.count + errored.count, skipped.count, ignored.count
       puts
     end
 
@@ -66,6 +66,9 @@ module Tester
     end
     def ignored
       @contexts.map(&:ignored).inject(:+)
+    end
+    def errored
+      @contexts.map(&:errored).inject(:+)
     end
   end
 end

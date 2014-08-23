@@ -33,11 +33,11 @@ The test result is determined by the exitcode of the test.
 * 1 => Fail
 * 2 => Skip
 
-Any other returncodes are currently reported as failing, though this is subject to change.
+Any other returncodes will report as an error.
 
 ### Appearance when run
 
-When run on the console, characters will appear corresponding to the status of the test.
+When run on the console using the default formatter, characters will appear corresponding to the status of the test.
 
 * Pass => . (green if colors are enabled)
 * Fail => F (red if colors are enabled)

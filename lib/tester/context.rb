@@ -112,6 +112,10 @@ module Tester
       all_tests.select(&:passed?)
     end
     
+    def errored
+      all_tests.select(&:errored?)
+    end
+
     private
    
     def run_tests!

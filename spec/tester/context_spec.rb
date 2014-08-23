@@ -230,14 +230,14 @@ describe Tester::Context do
   describe "listing tests" do
     
     let(:context) { Tester::Context.new("some_directory", "some_directory", [skipped_test, passed_test], [inner_context]) }
-    let(:skipped_test) { double(Tester::Test, skipped?: true, failed?:false, ran?: true, passed?: false) }
-    let(:another_test) { double(Tester::Test, failed?: true, skipped?: false, ran?: true, passed?: false) }
-    let(:ignored_test) { double(Tester::Test, failed?: false, skipped?: false, ran?: false, passed?: false) }
-    let(:inner_context) { double(Tester::Context, all_tests: [another_test, ignored_test]) }
-    let(:passed_test) { double(Tester::Test, passed?: true, failed?: false, skipped?: false, ran?: true) }
-    
+    let(:skipped_test) { double(Tester::Test, skipped?: true, failed?:false, ran?: true, passed?: false, errored?: false) }
+    let(:another_test) { double(Tester::Test, failed?: true, skipped?: false, ran?: true, passed?: false, errored?: false) }
+    let(:ignored_test) { double(Tester::Test, failed?: false, skipped?: false, ran?: false, passed?: false, errored?: false) }
+    let(:inner_context) { double(Tester::Context, all_tests: [another_test, ignored_test, errored_test]) }
+    let(:passed_test) { double(Tester::Test, passed?: true, failed?: false, skipped?: false, ran?: true, errored?: false) }
+    let(:errored_test) { double(Tester::Test, errored?: true, passed?: false, failed?: false, skipped?: false, ran?: true) } 
     it "should list the tests of the context and its context" do
-      expect(context.all_tests).to eq([skipped_test, passed_test, another_test, ignored_test])
+      expect(context.all_tests).to eq([skipped_test, passed_test, another_test, ignored_test, errored_test])
     end
     it "should list the failed tests" do
       expect(context.failures).to eq([another_test])
@@ -249,10 +249,13 @@ describe Tester::Context do
       expect(context.ignored).to eq([ignored_test])
     end
     it "should list the tests that ran" do
-      expect(context.ran).to eq([skipped_test, passed_test, another_test])
+      expect(context.ran).to eq([skipped_test, passed_test, another_test, errored_test])
     end
     it "should list the tests that passed" do
       expect(context.passed).to eq([passed_test])
+    end
+    it "should list the tests that errored" do
+      expect(context.errored).to eq([errored_test])
     end
   end
 end

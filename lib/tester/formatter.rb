@@ -20,7 +20,8 @@ module Tester
       pass: Tester::Result::Pass,
       fail: Tester::Result::Fail,
       skip: Tester::Result::Skip,
-      ignore: Tester::Result::NoResult
+      ignore: Tester::Result::NoResult,
+      error: Tester::Result::Error
     }.each do |meth, result|
       define_method meth do |symbol = nil, color: :default, &block|
         raise ArgumentError if not (symbol or block)

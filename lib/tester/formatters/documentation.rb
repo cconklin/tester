@@ -11,4 +11,7 @@ Tester::Formatter.define_format "documentation", inline: false do
   ignore do |test|
     "#{test.name} (NOT RUN)"
   end
+  error color: :red do |test|
+    "#{test.name} (ERROR)"
+  end
 end

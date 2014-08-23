@@ -35,4 +35,9 @@ describe Tester::Suite do
     allow(context).to receive(:ignored).and_return([test])
     expect(suite.ignored).to eq([test])
   end
+  it "should list the tests that errored" do
+    test = double("test")
+    allow(context).to receive(:errored).and_return([test])
+    expect(suite.errored).to eq([test])
+  end
 end
