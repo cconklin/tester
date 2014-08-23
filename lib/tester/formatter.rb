@@ -22,8 +22,14 @@ module Tester
       skip: Tester::Result::Skip,
       ignore: Tester::Result::NoResult
     }.each do |meth, result|
-      define_method meth do |symbol, color: :default|
-        @symbols[result] = ->(test) { symbol }
+      define_method meth do |symbol = nil, color: :default, &block|
+        raise ArgumentError if not (symbol or block)
+        if block
+          raise ArgumentError if symbol
+          @symbols[result] = block
+        else
+          @symbols[result] = ->(test) { symbol }
+        end
         @colors[result] = color
       end
     end

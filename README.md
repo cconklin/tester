@@ -62,5 +62,14 @@ The options for colors are red, cyan, yellow, red, green, magenta, blue, and def
 
 The `inline` option specifies that the results are to be placed on the same line. It defaults to true.
 
+It is also possible to pass it a block with the test as an argument, allowing for more complex result formatting.
+
+```ruby
+pass color: :green do |test|
+  "#{test.name} passed with flying colors!"
+end
+```
+
 The formatter can then be used by adding the flag `--format formatter_name`
+
 

@@ -35,7 +35,8 @@ module Tester
       else
         puts
       end
-      puts
+      # LoD violation
+      puts if Reporter.formatter.inline
       puts "Failures:" unless failures.empty?
       failures.each.with_index do |test, index|
         # Indexing starts at 0, make it start at 1

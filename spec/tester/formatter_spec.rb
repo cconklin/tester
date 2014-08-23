@@ -76,6 +76,22 @@ describe Tester::Formatter do
       formatter.fail(".", color: :green)
       expect(formatter.formatted_symbol(test)).to eq(".")
     end
+    it "should raise an error if nothing is passed" do
+      formatter = Tester::Formatter.new("my_formatter")
+      expect { formatter.fail }.to raise_error(ArgumentError)
+    end
+  end
+  describe "defining behavior with a block" do
+    let(:test) { double("test", name: "foo", result: Tester::Result::Fail) }
+    it "should not accept a symbol" do
+      formatter = Tester::Formatter.new("my_formatter")
+      expect { formatter.fail("F") {|test| "F" } }.to raise_error(ArgumentError)
+    end
+    it "should allow custom results" do
+      formatter = Tester::Formatter.new("my_formatter")
+      formatter.fail {|test| test.name}
+      expect(formatter.formatted_symbol(test)).to eq("foo")
+    end
   end
   describe "the DSL" do
     before do
