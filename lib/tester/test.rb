@@ -48,7 +48,7 @@ module Tester
       when 2; Result::Skip
       when nil; Result::NoResult
       else
-        new_reason = (test_result.stderr.strip + "\n" + new_reason.strip).strip
+        new_reason = (test_result.stderr.strip + "\n" + test_result.stdout.strip).strip
         Result::Error
       end
       Tester::Test.new(file, base, result, new_reason, stack)
