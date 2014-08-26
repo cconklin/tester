@@ -64,7 +64,7 @@ describe Tester::Context do
       end
       context "if the before fails" do
         let(:context) { Tester::Context.new("some_directory", "some_directory", [test], []) }
-        let(:before) { double("before", passed?: false, file: "some_directory/before") }
+        let(:before) { double("before", passed?: false, file: "some_directory/before", result: Tester::Result::Fail, reason: "failure") }
         let(:test) { double(Tester::Test, result: double("result")) }
         let(:inner_context) { double(Tester::Context, tests: []) }
         before do
@@ -78,7 +78,7 @@ describe Tester::Context do
         end
         it "should set its tests reason to its failure" do
           allow(Tester::Reporter).to receive(:report)
-          expect(test).to receive(:set_reason).with("Test set-up failed.\nFile: some_directory/before").and_return(test)
+          expect(test).to receive(:set_reason).with(Tester::Result::Fail, "failure").and_return(test)
           context.run!
         end
         it "should report results" do
@@ -142,7 +142,7 @@ describe Tester::Context do
       end
       context "if the before fails" do
         let(:context) { Tester::Context.new("some_directory", "some_directory", [test], []) }
-        let(:before) { double("before", passed?: false, file: "some_directory/before") }
+        let(:before) { double("before", passed?: false, file: "some_directory/before", result: Tester::Result::Fail, reason: "failure") }
         let(:test) { double(Tester::Test, result: double("result")) }
         let(:inner_context) { double(Tester::Context, tests: []) }
         before do
@@ -156,7 +156,7 @@ describe Tester::Context do
         end
         it "should set its tests reason to its failure" do
           allow(Tester::Reporter).to receive(:report)
-          expect(test).to receive(:set_reason).with("Test set-up failed.\nFile: some_directory/before").and_return(test)
+          expect(test).to receive(:set_reason).with(Tester::Result::Fail, "failure").and_return(test)
           context.run!
         end
         it "should report results" do
@@ -164,6 +164,32 @@ describe Tester::Context do
           expect(context).to receive(:report)
           context.run!
         end
+      end
+      context "if the before skips" do
+        let(:context) { Tester::Context.new("some_directory", "some_directory", [test], []) }
+        let(:before) { double("before", passed?: false, file: "some_directory/before", result: Tester::Result::Skip, reason: "skip") }
+        let(:test) { double(Tester::Test, result: double("result")) }
+        let(:inner_context) { double(Tester::Context, tests: []) }
+        before do
+          allow(context).to receive(:before).and_return(before)
+        end
+         it "should not run tests" do 
+          allow(context).to receive(:report)
+          allow(context).to receive(:set_reason).and_return(context)
+          expect(context).to_not receive(:run_tests!)
+          context.run!
+        end
+        it "should set its tests reason to its skipping" do
+          allow(Tester::Reporter).to receive(:report)
+          expect(test).to receive(:set_reason).with(Tester::Result::Skip, "skip").and_return(test)
+          context.run!
+        end
+        it "should report results" do
+          allow(context).to receive(:set_reason).and_return(context)
+          expect(context).to receive(:report)
+          context.run!
+        end
+      
       end
       context "when the before passes" do
         let(:context) { Tester::Context.new("some_directory", "some_directory", [], []) }

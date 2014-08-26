@@ -69,7 +69,7 @@ module Tester
         after.run!
       else
         # The set-up file failed, All tests in this context and sub-contexts cannot be run.
-        new_context = set_reason "Test set-up failed.\nFile: #{before.file}"
+        new_context = set_reason before.result, before.reason
         # Report the results of tests
         new_context.report
       end
@@ -116,6 +116,19 @@ module Tester
       all_tests.select(&:errored?)
     end
 
+    protected
+    
+    def set_reason(result, reason)
+      new_tests = tests.map do |test|
+        test.set_reason result, reason
+      end
+      new_contexts = contexts.map do |context|
+        context.set_reason result, reason
+      end
+      Tester::Context.new(@root, @base, new_tests, new_contexts)
+    end
+
+
     private
    
     def run_tests!
@@ -151,16 +164,6 @@ module Tester
       new_tests = new_test_threads.map(&:join).map(&:value)
       new_contexts = new_context_threads.map(&:join).map(&:value)
       # Return a new context with these new tests and contexts to avoid mutation
-      Tester::Context.new(@root, @base, new_tests, new_contexts)
-    end
-
-    def set_reason(reason)
-      new_tests = tests.map do |test|
-        test.set_reason reason
-      end
-      new_contexts = contexts.map do |context|
-        context.reason = reason
-      end
       Tester::Context.new(@root, @base, new_tests, new_contexts)
     end
 

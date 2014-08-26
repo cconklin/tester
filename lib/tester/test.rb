@@ -17,8 +17,8 @@ module Tester
       file.partition(base).last.gsub(/[_\/]/, " ").strip
     end
 
-    def set_reason(new_reason)
-      Tester::Test.new(file, base, result, new_reason)
+    def set_reason(new_result, new_reason)
+      Tester::Test.new(file, base, new_result, new_reason)
     end
     # Report if a test ran.
     # All tests that ran have a result
