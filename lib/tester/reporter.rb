@@ -19,7 +19,7 @@ module Tester
       if formatter.inline
         print formatter.formatted_symbol(test)
       else
-        puts formatter.formatted_symbol(test)
+        print formatter.formatted_symbol(test) + "\n"
       end
     end
 

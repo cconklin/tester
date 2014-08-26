@@ -9,8 +9,8 @@ describe Tester::Reporter do
         Tester::Reporter.formatter = formatter
       end
       it "should display the icon" do
-        expect(formatter).to receive(:formatted_symbol)
-        expect(Tester::Reporter).to receive(:print)
+        expect(formatter).to receive(:formatted_symbol).and_return(".")
+        expect(Tester::Reporter).to receive(:print).with(".")
         Tester::Reporter.report double("test", result: Tester::Result::Pass)
       end
     end
@@ -20,8 +20,8 @@ describe Tester::Reporter do
         Tester::Reporter.formatter = formatter
       end
       it "should display the icon" do
-        expect(formatter).to receive(:formatted_symbol)
-        expect(Tester::Reporter).to receive(:puts)
+        expect(formatter).to receive(:formatted_symbol).and_return("pass")
+        expect(Tester::Reporter).to receive(:print).with("pass\n")
         Tester::Reporter.report double("test", result: Tester::Result::Pass)
       end
     end
