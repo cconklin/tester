@@ -121,4 +121,14 @@ describe Tester::Test do
       end
     end
   end
+  describe "the stack" do
+    it "should start with the tests file" do
+      test = Tester::Test.new("some_file", "")
+      expect(test.stack).to eq(["some_file"])
+    end
+    it "should allow pushing" do
+      test = Tester::Test.new("some_file", "").push("another_file")
+      expect(test.stack).to eq(["another_file", "some_file"])
+    end
+  end
 end

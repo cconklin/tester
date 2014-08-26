@@ -59,11 +59,15 @@ module Tester
       if colored?
         "#{test.name}:".color(color(test.result)) << "\n" <<
         "#{test.reason}".strip.color(color(test.result)).indent(2) << "\n" <<
-        "# #{test.file}".indent.color(:blue)
+        test.stack.map do |file|
+          "# #{file}".indent.color(:blue)
+        end.join("\n")
       else
         "#{test.name}:" << "\n" <<
         "#{test.reason}".strip.indent(2) << "\n" <<
-        "# #{test.file}".indent
+        test.stack.map do |file|
+          "# #{file}".indent
+        end.join("\n")
       end
     end
 

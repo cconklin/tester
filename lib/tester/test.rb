@@ -3,12 +3,13 @@ require "tester/runner"
 
 module Tester
   class Test
-    attr_reader :file, :result, :base, :reason
-    def initialize(file, base, result = Result::NoResult, reason = "No Reason Given")
+    attr_reader :file, :result, :base, :reason, :stack
+    def initialize(file, base, result = Result::NoResult, reason = "No Reason Given", stack = nil)
       @file = file
       @base = base
       @result = result
       @reason = reason
+      @stack = stack || [file]
     end
     
     # Turn the path into a test name
@@ -18,8 +19,13 @@ module Tester
     end
 
     def set_reason(new_result, new_reason)
-      Tester::Test.new(file, base, new_result, new_reason)
+      Tester::Test.new(file, base, new_result, new_reason, stack)
     end
+
+    def push(new_file)
+      Tester::Test.new(file, base, result, reason, [new_file] + stack)
+    end
+
     # Report if a test ran.
     # All tests that ran have a result
     def ran?
@@ -45,7 +51,7 @@ module Tester
         new_reason = (test_result.stderr.strip + "\n" + new_reason.strip).strip
         Result::Error
       end
-      Tester::Test.new(file, base, result, new_reason)
+      Tester::Test.new(file, base, result, new_reason, stack)
     end
 
     def passed?

@@ -29,11 +29,11 @@ module Tester
       case @result.exitstatus
       when 1
         "Test set-up failed.\n" +
-        "#{@result.stdout}File: #{file}".strip
+        "#{@result.stdout}".strip
       when 2
         "Test set-up skipped.\n" +
-        "#{@result.stdout}File: #{file}".strip
-      when nil; "Test set-up could not be run.\nFile: #{file}"
+        "#{@result.stdout}".strip
+      when nil; "Test set-up could not be run."
       end
     end
     # Map the exit status of the hook to the result of its tests

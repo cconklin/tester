@@ -70,6 +70,8 @@ module Tester
       else
         # The set-up file failed, All tests in this context and sub-contexts cannot be run.
         new_context = set_reason before.result, before.reason
+        # Push the setup file to the 'stack trace'
+        new_context = new_context.push before.file
         # Report the results of tests
         new_context.report
       end
@@ -128,6 +130,15 @@ module Tester
       Tester::Context.new(@root, @base, new_tests, new_contexts)
     end
 
+    def push(file)
+      new_tests = tests.map do |test|
+        test.push file
+      end
+      new_contexts = contexts.map do |context|
+        context.push file
+      end
+      Tester::Context.new(@root, @base, new_tests, new_contexts)
+    end
 
     private
    
