@@ -37,11 +37,22 @@ module Tester
       @tests = tests || Context.tests(root, base)
       @contexts = contexts || Context.contexts(root, base)
     end
+
+    # List of file types to ignore
+    def self.excluded
+      %w[*.c *.h]
+    end
+
+    def self.exclude?(file)
+      excluded.any? do |exclude|
+        file =~ Regexp.new(Regexp.escape(exclude).gsub('\*','.*?'))
+      end
+    end
     
     # Find all files (not directories) in the context's directory
     # Ignore context hooks that run before or after tests
     def self.tests(root, base)
-      Dir.entries(root).select { |e| File.file?(File.join(root, e)) and not hook?(e) }.map do |t|
+      Dir.entries(root).select { |e| File.file?(File.join(root, e)) and not hook?(e) and not exclude?(e) }.map do |t|
         Tester::Test.new(File.join(root, t), base)
       end
     end

@@ -272,4 +272,14 @@ describe Tester::Context do
       expect(context.errored).to eq([errored_test])
     end
   end
+  describe "excluding tests" do
+    it "should exclude tests that match the pattern" do
+      allow(Tester::Context).to receive(:excluded).and_return(["*.c"])
+      expect(Tester::Context.exclude?("foo.c")).to eq(true)
+    end
+    it "should not exclude tests that do not match the pattern" do
+      allow(Tester::Context).to receive(:excluded).and_return(["*.c"])
+      expect(Tester::Context.exclude?("foo.h")).to eq(false)
+    end
+  end
 end
