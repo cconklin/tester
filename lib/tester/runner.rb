@@ -24,8 +24,14 @@ module Tester
                  # In this case, set the stdout and stderr to NotExecutable,
                  # which behaves like a string when needed; also create a dummy
                  # pid with a nil exitstatus
-                 [NotExecutable, NotExecutable, Struct.new(:exitstatus).new(nil)]
+                 [NotExecutable, NotExecutable, Struct.new(:exitstatus, :signaled?).new(nil, false)]
                end
+      # If it was killed due to an uncaught signal, the exitstatus is nil.
+      # Correct this by faking an error exitstatus.
+      if result.last.signaled?
+        return new(result[0], "Segmentation Fault", Struct.new(:exitstatus).new(3)) if result.last.termsig == 11
+        return new(result[0], result[1], Struct.new(:exitstatus).new(3))
+      end
       new(*result)
     end
   end
