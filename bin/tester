@@ -1,2 +1,2 @@
 #!/bin/sh
-ruby $(dirname $0)/../lib/tester.rb $@
+ruby $(dirname `readlink $0`)/../lib/tester.rb $@

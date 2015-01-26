@@ -32,7 +32,15 @@ module Tester
     formatter.colored = options[:color]
     Tester::Reporter.formatter = formatter
     Tester::Context.async = options[:async]
-    Tester::Suite.new(ARGV).run!
+    if ARGV.empty?
+      if Dir.exists? "test"
+        Tester::Suite.new(["test"]).run!
+      else
+        puts "Error: Could not locate tests. Pass a path to the test directory."
+      end
+    else
+      Tester::Suite.new(ARGV).run!
+    end
   end
 end
 
