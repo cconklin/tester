@@ -3,16 +3,13 @@ require "tester/result"
 require "tester/formatter"
 
 module Tester
-  module Reporter
+  class Reporter
     using Tester::Refinements::String
-    extend self
-    
-    def formatter=(formatter)
-      @@formatter = formatter
-    end
-    
-    def formatter
-      @@formatter
+  
+    attr_reader :formatter
+
+    def initialize(formatter)
+      @formatter = formatter
     end
 
     def report(test)

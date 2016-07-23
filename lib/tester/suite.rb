@@ -3,8 +3,9 @@ require "benchmark"
 
 module Tester
   class Suite
-    attr_reader :contexts
-    def initialize(files)
+    attr_reader :contexts, :reporter
+    def initialize(files, reporter)
+      @reporter = reporter
       @load_time = Benchmark.measure do
         @contexts = files.map do |root|
           # Try to determine where the root test directory is, to provide better test naming
@@ -36,22 +37,22 @@ module Tester
         puts
       end
       # LoD violation
-      puts if Reporter.formatter.inline
+      puts if reporter.formatter.inline
       puts "Failures:" unless failures.empty?
       (failures + errored).each.with_index do |test, index|
         # Indexing starts at 0, make it start at 1
-        Reporter.display index + 1, test
+        reporter.display index + 1, test
       end
       puts "Skipped:" unless skipped.empty?
       skipped.each.with_index do |test, index|
-        Reporter.display index + 1, test
+        reporter.display index + 1, test
       end
       puts "Not Run:" unless ignored.empty?
       ignored.each.with_index do |test, index|
-        Reporter.display index + 1, test
+        reporter.display index + 1, test
       end
       puts "Finished in #{@run_time} seconds (files took #{@load_time} seconds to load)"
-      Reporter.epilogue all_tests.count, failures.count + errored.count, skipped.count, ignored.count
+      reporter.epilogue all_tests.count, failures.count + errored.count, skipped.count, ignored.count
       puts
     end
 

@@ -14,6 +14,15 @@ module Tester
       @@async
     end
 
+    # Reporter
+    def self.reporter=(reporter)
+      @@reporter = reporter
+    end
+
+    def self.reporter
+      @@reporter
+    end
+
     # Define the hooks that are run before or after tests
     # This will probably be refactored into the ContextHook class
     # to allow for more flexible hooks.
@@ -81,7 +90,7 @@ module Tester
     # Report test results to the user
     def report
       tests.each do |test|
-        Tester::Reporter.report test
+        Context.reporter.report test
       end
       contexts.each do |context|
         context.report
@@ -146,7 +155,7 @@ module Tester
       # Run tests and contexts synchronously
       new_tests = tests.map do |test|
         new_test = test.run!
-        Tester::Reporter.report new_test
+        Context.reporter.report new_test
         new_test
       end
       new_contexts = contexts.map do |context|
@@ -163,7 +172,7 @@ module Tester
       new_test_threads = tests.map do |test|
         Thread.new do
           new_test = test.run!
-          Tester::Reporter.report new_test
+          Context.reporter.report new_test
           new_test
         end
       end

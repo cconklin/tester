@@ -3,8 +3,9 @@ require "tester/suite"
 require "tester/context"
 
 describe Tester::Suite do
+  let(:reporter) { double Tester::Reporter }
   let(:context) { double Tester::Context }
-  let(:suite) { Tester::Suite.new(["some_directory"]) }
+  let(:suite) { Tester::Suite.new(["some_directory"], reporter) }
   before do
     allow(Tester::Context).to receive(:new).with("some_directory", "some_directory").and_return(context)
   end
@@ -13,7 +14,7 @@ describe Tester::Suite do
   end
   it "should choose the right base path" do
     expect(Tester::Context).to receive(:new).with("t/b/test/some_directory", "t/b/test")
-    Tester::Suite.new(["t/b/test/some_directory"])
+    Tester::Suite.new(["t/b/test/some_directory"], reporter)
   end
   it "should run its contexts" do
     allow(suite).to receive(:report)

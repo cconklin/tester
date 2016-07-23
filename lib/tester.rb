@@ -30,9 +30,10 @@ module Tester
     require "tester/formatters/#{options[:formatter]}"
     formatter = Tester::Formatter.formatter(options[:formatter])
     formatter.colored = options[:color]
-    Tester::Reporter.formatter = formatter
+    reporter = Tester::Reporter.new formatter
+    Tester::Context.reporter = reporter
     Tester::Context.async = options[:async]
-    Tester::Suite.new(ARGV).run!
+    Tester::Suite.new(ARGV, reporter).run!
   end
 end
 

@@ -2,6 +2,10 @@ require "spec_helper"
 require "tester/context"
 
 describe Tester::Context do
+  let(:reporter) { double(Tester::Reporter) }
+  before do
+    Tester::Context.reporter = reporter
+  end
   describe "loading tests" do
     context "with no before or after" do
       before do
@@ -84,14 +88,14 @@ describe Tester::Context do
         it "should run the tests" do
           allow(context).to receive(:contexts).and_return([])
           allow(context).to receive(:tests).and_return([test])
-          allow(Tester::Reporter).to receive(:report)
+          allow(reporter).to receive(:report)
           expect(test).to receive(:run!).once.and_return(test)
           context.run!
         end
         it "should report the test results" do
           allow(context).to receive(:contexts).and_return([])
           allow(context).to receive(:tests).and_return([test])
-          expect(Tester::Reporter).to receive(:report).with(test.run!).once
+          expect(reporter).to receive(:report).with(test.run!).once
           context.run!
         end
         it "should run the after once the tests have completed" do
@@ -102,7 +106,7 @@ describe Tester::Context do
           context.run!
         end
         it "should create threads" do
-          allow(Tester::Reporter).to receive(:report)
+          allow(reporter).to receive(:report)
           # Use the full constructor to avoid automatic test lookup
           context = Tester::Context.new("some_directory", "some_directory", [test], [])
           expect(Thread).to receive(:new).and_call_original
@@ -131,7 +135,7 @@ describe Tester::Context do
           context.run!
         end
         it "should set its tests reason to its failure" do
-          allow(Tester::Reporter).to receive(:report)
+          allow(reporter).to receive(:report)
           allow(context).to receive(:push).and_return(context)
           expect(context).to receive(:set_reason).with(Tester::Result::Fail, "failure").and_return(context)
           context.run!
@@ -143,7 +147,7 @@ describe Tester::Context do
           context.run!
         end
         it "should push the before to the test's stack" do
-          allow(Tester::Reporter).to receive(:report)
+          allow(reporter).to receive(:report)
           allow(context).to receive(:set_reason).and_return(context)
           allow(test).to receive(:set_reason)
           expect(context).to receive(:push).with(before.file).and_return(context)
@@ -166,7 +170,7 @@ describe Tester::Context do
           context.run!
         end
         it "should set its tests reason to its skipping" do
-          allow(Tester::Reporter).to receive(:report)
+          allow(reporter).to receive(:report)
           allow(context).to receive(:push).and_return(context)
           expect(context).to receive(:set_reason).with(Tester::Result::Skip, "skip").and_return(context)
           context.run!
@@ -190,7 +194,7 @@ describe Tester::Context do
         it "should not use threads" do
           inner_context = double("context", run!: double("ran_context"))
           context = Tester::Context.new("some_directory", "some_directory", [test], [inner_context])
-          allow(Tester::Reporter).to receive(:report)
+          allow(reporter).to receive(:report)
           expect(Thread).to_not receive(:new)
           context.run!
         end
@@ -207,13 +211,13 @@ describe Tester::Context do
         it "should run the tests" do
           test = double(Tester::Test, result: nil)
           allow(context).to receive(:tests).and_return([test])
-          allow(Tester::Reporter).to receive(:report)
+          allow(reporter).to receive(:report)
           expect(test).to receive(:run!).once.and_return(test)
           context.run!
         end
         it "should report the test results" do
           allow(context).to receive(:tests).and_return([test])
-          expect(Tester::Reporter).to receive(:report).with(test.run!).once
+          expect(reporter).to receive(:report).with(test.run!).once
           context.run!
         end
         it "should run the after once the tests have completed" do
@@ -232,11 +236,11 @@ describe Tester::Context do
     let(:inner_context) { double(Tester::Context) }
     it "should send tests to the reporter" do
       allow(inner_context).to receive(:report)
-      expect(Tester::Reporter).to receive(:report).with(test)
+      expect(reporter).to receive(:report).with(test)
       context.report
     end
     it "should call report on the contexts" do
-      allow(Tester::Reporter).to receive(:report).with(test)
+      allow(reporter).to receive(:report).with(test)
       expect(inner_context).to receive(:report)
       context.report
     end
