@@ -41,19 +41,16 @@ module Tester
     end
 
     def colored_epilogue(examples, failed, skipped, ignored)
-      if failed == 0
-        if skipped == 0
-          if ignored == 0
-            colorless_epilogue(examples, failed, skipped, ignored).color(formatter.color(Tester::Result::Pass))
-          else
-            colorless_epilogue(examples, failed, skipped, ignored).color(formatter.color(Tester::Result::NoResult))
-          end
-        else
-          colorless_epilogue(examples, failed, skipped, ignored).color(formatter.color(Tester::Result::Skip))
-        end
+      if failed != 0
+        color = formatter.color(Tester::Result::Fail)
+      elsif skipped != 0
+        color = formatter.color(Tester::Result::Skip)
+      elsif ignored != 0
+        color = formatter.color(Tester::Result::NoResult)
       else
-        colorless_epilogue(examples, failed, skipped, ignored).color(formatter.color(Tester::Result::Fail))
+        color = formatter.color(Tester::Result::Pass)
       end
+      colorless_epilogue(examples, failed, skipped, ignored).color(color)
     end
 
     def colorless_epilogue(examples, failed, skipped, ignored)
