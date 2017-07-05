@@ -29,18 +29,22 @@ module Tester
       end
     end
     
-    attr_reader :tests, :contexts
+    attr_reader :contexts
+
+    def tests
+      @tests || Context.tests(@root, @base)
+    end
 
     def initialize(root, base, tests = nil, contexts = nil)
       @root = root
       @base = base
-      @tests = tests || Context.tests(root, base)
+      @tests = tests
       @contexts = contexts || Context.contexts(root, base)
     end
 
     # List of file types to ignore
     def self.excluded
-      %w[*.c *.h]
+      %w[*.c *.h *.ir Makefile]
     end
 
     def self.exclude?(file)
