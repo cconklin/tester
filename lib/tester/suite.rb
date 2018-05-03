@@ -51,7 +51,7 @@ module Tester
       ignored.each.with_index do |test, index|
         reporter.display index + 1, test
       end
-      puts "Finished in #{@run_time} seconds (files took #{@load_time} seconds to load)"
+      puts "Finished in %0.05f seconds (files took %0.05f seconds to load)" % [@run_time, @load_time]
       reporter.epilogue all_tests.count, failures.count + errored.count, skipped.count, ignored.count
       puts
     end

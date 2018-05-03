@@ -34,6 +34,15 @@ module Tester
     Tester::Context.reporter = reporter
     Tester::Context.async = options[:async]
     Tester::Suite.new(ARGV, reporter).run!
+    if ARGV.empty?
+      if Dir.exists? "test"
+        Tester::Suite.new(["test"], reporter).run!
+      else
+        puts "Error: Could not locate tests. Pass a path to the test directory."
+      end
+    else
+      Tester::Suite.new(ARGV, reporter).run!
+    end
   end
 end
 

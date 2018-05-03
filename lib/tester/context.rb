@@ -38,28 +38,53 @@ module Tester
       end
     end
     
-    attr_reader :tests, :contexts
+    attr_reader :contexts
+
+    def tests
+      @tests || load_tests
+    end
+
+    def contexts
+      @contexts || load_contexts
+    end
 
     def initialize(root, base, tests = nil, contexts = nil)
       @root = root
       @base = base
-      @tests = tests || Context.tests(root, base)
-      @contexts = contexts || Context.contexts(root, base)
+      @tests = tests
+      @contexts = contexts
+    end
+
+    # List of file types to ignore
+    def excluded
+      exclude = %w[.testerignore]
+      # Only have .testerignore at top level test dir
+      ignorefile = File.join @base, ".testerignore"
+      if File.file?(ignorefile)
+        exclude += File.read(ignorefile).split("\n")
+      end
+      exclude
+    end
+
+    def exclude?(file)
+      excluded.any? do |exclude|
+        file =~ Regexp.new(Regexp.escape(exclude).gsub('\*','.*?'))
+      end
     end
     
     # Find all files (not directories) in the context's directory
     # Ignore context hooks that run before or after tests
-    def self.tests(root, base)
-      Dir.entries(root).select { |e| File.file?(File.join(root, e)) and not hook?(e) }.map do |t|
-        Tester::Test.new(File.join(root, t), base)
+    def load_tests
+      Dir.entries(@root).select { |e| File.file?(File.join(@root, e)) and not Context.hook?(e) and not exclude?(e) }.map do |t|
+        Tester::Test.new(File.join(@root, t), @base)
       end
     end
     
     # Find all directories in the context's directory
     # Ignore the directories "." and ".." to avoid infinite recursion
-    def self.contexts(root, base)
-      Dir.entries(root).reject { |e| File.file?(File.join(root, e)) or [".", ".."].include?(e) }.map do |c|
-        Tester::Context.new(File.join(root, c), base)
+    def load_contexts
+      Dir.entries(@root).reject { |e| File.file?(File.join(@root, e)) or [".", ".."].include?(e) }.map do |c|
+        Tester::Context.new(File.join(@root, c), @base)
       end
     end
 

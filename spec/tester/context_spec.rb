@@ -16,25 +16,28 @@ describe Tester::Context do
       it "should find test files" do
         test = double(Tester::Test)
         allow(Tester::Test).to receive(:new).with("some_directory/a_test", "some_directory").and_return(test)
-        expect(Tester::Context.tests("some_directory", "some_directory")).to eq([test])
+        context = Tester::Context.new("some_directory", "some_directory")
+        allow(context).to receive(:excluded).and_return []
+        expect(context.load_tests).to eq([test])
       end
       it "should find contexts" do
         inner_context = double(Tester::Context)
+        context = Tester::Context.new("some_directory", "some_directory")
         allow(Tester::Context).to receive(:new).with("some_directory/a_context", "some_directory").and_return(inner_context)
-        expect(Tester::Context.contexts("some_directory", "some_directory")).to eq([inner_context])
+        expect(context.load_contexts).to eq([inner_context])
       end
       it "should be able to access the tests" do
         test = double("test")
-        allow(Tester::Context).to receive(:tests).and_return([test])
-        allow(Tester::Context).to receive(:contexts).and_return([])
         context = Tester::Context.new("some_directory", "some_directory")
+        allow(context).to receive(:load_tests).and_return([test])
+        allow(context).to receive(:load_contexts).and_return([])
         expect(context.tests).to eq([test])
       end
       it "should be able to access the contexts" do
         inner_context = double("context")
-        allow(Tester::Context).to receive(:tests).and_return([])
-        allow(Tester::Context).to receive(:contexts).and_return([inner_context])
         context = Tester::Context.new("some_directory", "some_directory")
+        allow(context).to receive(:load_tests).and_return([])
+        allow(context).to receive(:load_contexts).and_return([inner_context])
         expect(context.contexts).to eq([inner_context])
       end
     end
@@ -46,7 +49,9 @@ describe Tester::Context do
       it "should not have the before in its tests" do
         test = double(Tester::Test)
         allow(Tester::Test).to receive(:new).with("some_directory/a_test", "some_directory").and_return(test)
-        expect(Tester::Context.tests("some_directory", "some_directory")).to eq([test])
+        context = Tester::Context.new("some_directory", "some_directory")
+        allow(context).to receive(:excluded).and_return []
+        expect(context.load_tests).to eq([test])
       end
     end
     context "with an after" do
@@ -57,7 +62,9 @@ describe Tester::Context do
       it "should not have the after in its tests" do
         test = double(Tester::Test)
         allow(Tester::Test).to receive(:new).with("some_directory/a_test", "some_directory").and_return(test)
-        expect(Tester::Context.tests("some_directory", "some_directory")).to eq([test])
+        context = Tester::Context.new("some_directory", "some_directory")
+        allow(context).to receive(:excluded).and_return []
+        expect(context.load_tests).to eq([test])
       end
     end
   end
@@ -274,6 +281,18 @@ describe Tester::Context do
     end
     it "should list the tests that errored" do
       expect(context.errored).to eq([errored_test])
+    end
+  end
+  describe "excluding tests" do
+    it "should exclude tests that match the pattern" do
+      context = Tester::Context.new("root", "base")
+      allow(context).to receive(:excluded).and_return(["*.c"])
+      expect(context.exclude?("foo.c")).to eq(true)
+    end
+    it "should not exclude tests that do not match the pattern" do
+      context = Tester::Context.new("root", "base")
+      allow(context).to receive(:excluded).and_return(["*.c"])
+      expect(context.exclude?("foo.h")).to eq(false)
     end
   end
 end
